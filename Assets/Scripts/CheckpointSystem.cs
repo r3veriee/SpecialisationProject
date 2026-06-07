@@ -1,60 +1,148 @@
+//using UnityEngine;
+//using UnityEngine.UI; // Needed for the Image component
+//using System.Collections; // Needed for Coroutines
+
+//[RequireComponent(typeof(Rigidbody))]
+//public class CheckpointSystem : MonoBehaviour
+//{
+//    [Header("Respawn Settings")]
+//    public Vector3 currentRespawnPos;
+
+//    [Header("Fade Settings")]
+//    public Image fadeScreen; // Drag your black UI Image here
+//    public float fadeSpeed = 3f;
+
+//    private Rigidbody rb;
+//    private MovementTech movementScript;
+//    private bool isRespawning = false; // Prevents triggering it twice
+
+//    void Start()
+//    {
+//        rb = GetComponent<Rigidbody>();
+//        movementScript = GetComponent<MovementTech>();
+//        currentRespawnPos = transform.position;
+//    }
+
+//    void OnTriggerEnter(Collider other)
+//    {
+//        if (other.CompareTag("Checkpoint"))
+//        {
+//            currentRespawnPos = other.transform.position;
+//            other.enabled = false;
+//        }
+//        else if (other.CompareTag("Killzone") && !isRespawning)
+//        {
+//            StartCoroutine(RespawnRoutine());
+//        }
+//    }
+
+//    IEnumerator RespawnRoutine()
+//    {
+//        isRespawning = true;
+
+//        // 1. Fade out to black
+//        float alpha = 0f;
+//        while (alpha < 1f)
+//        {
+//            alpha += Time.deltaTime * fadeSpeed;
+//            if (fadeScreen != null) fadeScreen.color = new Color(0, 0, 0, alpha);
+//            yield return null; // Wait for the next frame
+//        }
+
+//        // 2. Teleport and kill momentum while the screen is pitch black
+//        transform.position = currentRespawnPos;
+//        if (rb != null)
+//        {
+//            rb.linearVelocity = Vector3.zero;
+//            rb.angularVelocity = Vector3.zero;
+//        }
+//        if (movementScript != null) movementScript.ResetDash();
+
+//        // Optional: Wait half a second in the dark for dramatic effect
+//        yield return new WaitForSeconds(0.2f);
+
+//        // 3. Fade back in to the game
+//        while (alpha > 0f)
+//        {
+//            alpha -= Time.deltaTime * fadeSpeed;
+//            if (fadeScreen != null) fadeScreen.color = new Color(0, 0, 0, alpha);
+//            yield return null;
+//        }
+
+//        isRespawning = false;
+//    }
+//}
+
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class CheckpointSystem : MonoBehaviour
 {
     [Header("Respawn Settings")]
-    [Tooltip("The position the player will return to if they fall.")]
     public Vector3 currentRespawnPos;
+
+    [Header("Fade Settings")]
+    public Image fadeScreen;
+    public float fadeSpeed = 3f;
 
     private Rigidbody rb;
     private MovementTech movementScript;
+    private bool isRespawning = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         movementScript = GetComponent<MovementTech>();
-
-        // Default respawn point is exactly where the player starts the level
         currentRespawnPos = transform.position;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        // 1. UPDATE CHECKPOINT
         if (other.CompareTag("Checkpoint"))
         {
-            // Save this new safe location
             currentRespawnPos = other.transform.position;
-
-            // Turn off the checkpoint trigger so it doesn't fire again
             other.enabled = false;
         }
-
-        // 2. HIT THE VOID / UNREACHABLE AREA
-        else if (other.CompareTag("Killzone"))
+        else if (other.CompareTag("Killzone") && !isRespawning)
         {
-            Respawn();
+            StartCoroutine(RespawnRoutine());
         }
     }
 
     public void Respawn()
     {
-        // 1. Teleport the player back to the last saved checkpoint
-        transform.position = currentRespawnPos;
+        if (!isRespawning) StartCoroutine(RespawnRoutine());
+    }
 
-        // 2. CRITICAL: Instantly kill all physics momentum! 
-        // (Otherwise, you teleport but keep falling at 50mph)
+    IEnumerator RespawnRoutine()
+    {
+        isRespawning = true;
+        float alpha = 0f;
+        while (alpha < 1f)
+        {
+            alpha += Time.deltaTime * fadeSpeed;
+            if (fadeScreen != null) fadeScreen.color = new Color(0, 0, 0, alpha);
+            yield return null;
+        }
+
+        transform.position = currentRespawnPos;
         if (rb != null)
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
+        if (movementScript != null) movementScript.ResetDash();
 
-        // 3. Give the player their Dash back so they are ready to try the jump again
-        if (movementScript != null)
+        yield return new WaitForSeconds(0.2f);
+
+        while (alpha > 0f)
         {
-            movementScript.ResetDash();
+            alpha -= Time.deltaTime * fadeSpeed;
+            if (fadeScreen != null) fadeScreen.color = new Color(0, 0, 0, alpha);
+            yield return null;
         }
+        isRespawning = false;
     }
 }
