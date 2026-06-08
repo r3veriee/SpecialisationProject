@@ -4,11 +4,11 @@ using System.Collections;
 public class DashCrystal : MonoBehaviour
 {
     [Header("Settings")]
-    public float respawnTime = 2.5f; // How long it takes to come back
+    public float respawnTime = 2.5f;
 
     [Header("References")]
-    public MeshRenderer crystalMesh; // Drag the crystal's MeshRenderer here
-    public Collider crystalCollider; // Drag the crystal's Collider here
+    public MeshRenderer crystalMesh;
+    public Collider crystalCollider;
 
     [Header("Visuals")]
     public float spinSpeed = 150f;
@@ -32,7 +32,7 @@ public class DashCrystal : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Find the player's movement script and give them their dash back!
+            // Find the player's movement script and give them their dash back
             MovementTech playerMovement = other.GetComponent<MovementTech>();
             if (playerMovement != null)
             {
@@ -44,16 +44,15 @@ public class DashCrystal : MonoBehaviour
 
     IEnumerator CrystalRespawnRoutine()
     {
-        // 1. Shatter/Hide the crystal
+        // Shatter/Hide the crystal
         crystalMesh.enabled = false;
         crystalCollider.enabled = false;
 
-        // (Optional) Instantiate a particle explosion here!
+        // gonna add particle explosion here in the future
 
-        // 2. Wait for the cooldown
         yield return new WaitForSeconds(respawnTime);
 
-        // 3. Respawn the crystal
+        // Respawn the crystal
         crystalMesh.enabled = true;
         crystalCollider.enabled = true;
     }

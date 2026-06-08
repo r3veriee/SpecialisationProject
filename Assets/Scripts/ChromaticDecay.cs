@@ -1,77 +1,3 @@
-//using UnityEngine;
-//using UnityEngine.Rendering;
-//using UnityEngine.Rendering.Universal;
-
-//public class ChromaticDecay : MonoBehaviour
-//{
-//    [Header("References")]
-//    public Volume postProcessVolume;
-//    public Rigidbody playerRb;
-
-//    [Header("Speed Thresholds")]
-//    [Tooltip("Speeds below this mean the world starts turning grey")]
-//    public float minSpeed = 5f;
-//    [Tooltip("Target speed to achieve maximum neon color")]
-//    public float maxSpeed = 16f;
-
-//    [Header("Visual Limits")]
-//    public float minSaturation = -100f; // Completely grey/dead
-//    public float maxSaturation = 25f;   // Over-saturated neon pop
-//    public float maxChromaticAberration = 0.8f; // RGB edge splitting at high speed
-
-//    [Header("Transition Settings")]
-//    [Tooltip("How smoothly the colors fade in and out. Lower = slower fade.")]
-//    public float transitionSpeed = 4f;
-
-//    private ColorAdjustments colorAdjustments;
-//    private ChromaticAberration chromaticAberration;
-//    private float burstTimer = 0f;
-//    void Start()
-//    {
-//        // Safely fetch the specific effect overrides from the Volume Profile
-//        if (postProcessVolume.profile.TryGet(out ColorAdjustments ca))
-//            colorAdjustments = ca;
-
-//        if (postProcessVolume.profile.TryGet(out ChromaticAberration cb))
-//            chromaticAberration = cb;
-//    }
-
-//    void Update()
-//    {
-//        if (colorAdjustments == null) return;
-
-//        // 1. Get our current flat horizontal speed
-//        Vector3 flatVel = new Vector3(playerRb.linearVelocity.x, 0, playerRb.linearVelocity.z);
-//        float currentSpeed = flatVel.magnitude;
-
-//        // 2. Calculate a 0.0 to 1.0 percentage based on our speed
-//        float speedPercent = Mathf.InverseLerp(minSpeed, maxSpeed, currentSpeed);
-
-//        float targetSaturation;
-//        float targetCA;
-
-//        if (burstTimer > 0)
-//        {
-//            // If we just grabbed a shard, OVERRIDE to maximum neon!
-//            burstTimer -= Time.deltaTime;
-//            targetSaturation = maxSaturation;
-//            targetCA = maxChromaticAberration;
-//        }
-//        else
-//        {
-//            // Normal speed-based logic
-//            targetSaturation = Mathf.Lerp(minSaturation, maxSaturation, speedPercent);
-//            targetCA = Mathf.Lerp(0f, maxChromaticAberration, speedPercent);
-//        }
-//    }
-
-//    // Call this to force max saturation for a few seconds
-//    public void TriggerColourBurst(float duration)
-//    {
-//        burstTimer = duration;
-//    }
-//}
-
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -93,10 +19,13 @@ public class ChromaticDecay : MonoBehaviour
     private ChromaticAberration chromaticAberration;
     private float burstTimer = 0f;
 
+    private float currentMinSaturation;
+
     void Start()
     {
         if (postProcessVolume.profile.TryGet(out ColorAdjustments ca)) colorAdjustments = ca;
         if (postProcessVolume.profile.TryGet(out ChromaticAberration cb)) chromaticAberration = cb;
+        currentMinSaturation = minSaturation;
     }
 
     void Update()
@@ -118,7 +47,7 @@ public class ChromaticDecay : MonoBehaviour
         }
         else
         {
-            targetSaturation = Mathf.Lerp(minSaturation, maxSaturation, speedPercent);
+            targetSaturation = Mathf.Lerp(currentMinSaturation, maxSaturation, speedPercent);
             targetCA = Mathf.Lerp(0f, maxChromaticAberration, speedPercent);
         }
 
@@ -133,5 +62,27 @@ public class ChromaticDecay : MonoBehaviour
     public void TriggerColourBurst(float duration)
     {
         burstTimer = duration;
+    }
+
+    public void ReduceDecayPotency(float buffAmount)
+    {
+        // Calculate how much saturation to give back based on the shard's percentage
+        float totalSaturationRange = maxSaturation - minSaturation;
+        float saturationBoost = totalSaturationRange * buffAmount;
+
+        currentMinSaturation += saturationBoost;
+
+        // Cap it so the player can never become completely immune to the mechanic
+        if (currentMinSaturation > maxSaturation - 10f)
+        {
+            currentMinSaturation = maxSaturation - 10f;
+        }
+    }
+
+    public void RestoreFullColor()
+    {
+        TriggerColourBurst(2f);
+        if (colorAdjustments != null) colorAdjustments.saturation.value = maxSaturation;
+        if (chromaticAberration != null) chromaticAberration.intensity.value = maxChromaticAberration;
     }
 }

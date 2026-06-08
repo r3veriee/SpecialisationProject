@@ -8,8 +8,7 @@ public class NPCQuestGiver : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SideQuestManager.Instance.StartNPCQuest(startingTime);
-            gameObject.SetActive(false);
+            SideQuestManager.Instance.StartNPCQuest(startingTime, gameObject);
         }
     }
 }

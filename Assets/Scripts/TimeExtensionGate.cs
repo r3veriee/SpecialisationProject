@@ -8,8 +8,7 @@ public class TimeExtensionGate : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SideQuestManager.Instance.AddQuestTime(bonusTime);
-            Destroy(gameObject);
+            SideQuestManager.Instance.AddQuestTime(bonusTime, gameObject);
         }
     }
 }

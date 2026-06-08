@@ -5,24 +5,30 @@ using UnityEngine.InputSystem;
 public class MovementTech : MonoBehaviour
 {
     [Header("Core Movement Stats")]
-    public float walkSpeed = 16f;
+    public float walkSpeed = 10f;
     public float acceleration = 4f;
-    public float groundFriction = 8f;
+    public float groundFriction = 20f;
 
-    [Header("Tech Stats (The Trinity)")]
-    public float dashForce = 45f;
-    public float jumpForce = 14f;
-    public float hyperMultiplier = 3.0f;
-    public float hyperVerticalMultiplier = 0.4f;
-    public float superMultiplier = 1.5f;
-    public float superVerticalMultiplier = 1.5f;
+    [Header("Anti-Slip & Air Control")]
+    public float airAcceleration = 12f;
+    public float airDrag = 1.5f;
+    public float turnMultiplier = 2.5f;
+
+    [Header("Tech Stats")]
+    public float dashForce = 30f;
+    public float jumpForce = 8f;
+    public float hyperMultiplier = 3.5f;
+    public float hyperVerticalMultiplier = 1.2f;
+    public float superMultiplier = 1.75f;
+    public float superVerticalMultiplier = 1.35f;
+    public float techFrictionMultiplier = 0.15f;
     public float dashDuration = 0.25f;
-    public float dashCooldown = 1.0f;
-    public float wavedashAngleThreshold = -0.15f;
+    public float dashCooldown = 1.5f;
+    public float wavedashAngleThreshold = -0.1f;
 
-    [Header("Mirror's Edge Slide")]
-    public float slideBoost = 10f;       // Instant forward push when sliding
-    public float slideFriction = 1f;     // Ice physics while sliding
+    [Header("Slide")]
+    public float slideBoost = 10f;
+    public float slideFriction = 1f;
     public float normalHeight = 2f;
     public float slideHeight = 1f;
     public CapsuleCollider playerCollider;
@@ -31,33 +37,34 @@ public class MovementTech : MonoBehaviour
     public Transform playerCamera;
     public float mouseSensitivity = 0.1f;
     public float jumpBufferTime = 0.2f;
-    public float groundCoyoteTime = 0.15f;
+    public float groundCoyoteTime = 0.3f;
     public Transform groundCheckPoint;
-    public float groundCheckRadius = 0.4f;
+    public float groundCheckRadius = 0.3f;
     public LayerMask groundLayer;
 
     [Header("Camera Tilt & Slide Effects")]
     public float wallRunTilt = 15f;
     public float tiltSpeed = 6f;
     public float standingCamHeight = 0.8f;
-    public float slidingCamHeight = -0.2f;
+    public float slidingCamHeight = 0.4f;
     public float crouchTransitionSpeed = 10f;
     private float currentTilt = 0f;
 
-    [Header("Wallrun (Mirror's Edge Flow)")]
+    [Header("Wallrun")]
     public LayerMask wallLayer;
-    public float wallCheckDistance = 0.7f;
-    public float minWallRunSpeed = 6f;
-    public float wallRunGravity = 4f;
-    public float wallJumpForce = 14f;
-    public float wallJumpForwardBoost = 8f;
+    public float wallCheckDistance = 0.6f;
+    public float minWallRunSpeed = 4f;
+    public float wallRunGravity = 0.5f;
+    public float wallJumpForce = 25f;
+    public float wallJumpForwardBoost = 12f;
+    public float wallRunAcceleration = 4f; 
+    public float maxWallRunSpeed = 24f;    
     private bool isWallrunning;
     private RaycastHit leftWallHit;
     private RaycastHit rightWallHit;
     private bool wallLeft;
     private bool wallRight;
 
-    [Tooltip("Scales down upward dash power so you don't fly out of the map. 1 = Full Jetpack.")]
     public float upwardDashMultiplier = 0.4f;
 
     private PlayerControls controls;
@@ -73,7 +80,7 @@ public class MovementTech : MonoBehaviour
     private bool techActive;
     private bool canDash = true;
     private bool isJumpHeld;
-    private bool isDashTechDownward; // NEW: Remembers if we meant to hyper!
+    private bool isDashTechDownward;
 
     private float dashTimer;
     private float dashCooldownTimer;
@@ -85,6 +92,8 @@ public class MovementTech : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         controls = new PlayerControls();
@@ -102,37 +111,38 @@ public class MovementTech : MonoBehaviour
     {
         if (jumpCooldownTimer > 0) jumpCooldownTimer -= Time.deltaTime;
         if (dashCooldownTimer > 0) dashCooldownTimer -= Time.deltaTime;
+        if (jumpBufferCounter > 0) jumpBufferCounter -= Time.deltaTime;
+        if (dashTimer > 0) dashTimer -= Time.deltaTime;
+        else isDashing = false;
 
         isJumpHeld = controls.Player.Jump.ReadValue<float>() > 0.5f;
 
-        CheckGrounded();
-        CheckWallRun();
         HandleLook();
 
+        // Dash Reset
         if ((isGrounded || isWallrunning) && dashCooldownTimer <= 0) canDash = true;
-        if (jumpBufferCounter > 0) jumpBufferCounter -= Time.deltaTime;
 
-        // --- UPDATED: Lock in the Hyper if we press crouch AT ALL during the dash ---
         if (isDashing && isCrouching)
         {
             isDashTechDownward = true;
         }
 
+        // Jump Execution
         bool validJumpInput = jumpBufferCounter > 0 || (isJumpHeld && isDashing);
-
         if (validJumpInput && groundCoyoteCounter > 0 && jumpCooldownTimer <= 0)
         {
             bool intentToHyper = isDashTechDownward || isCrouching;
-
             if (isGrounded || (isDashing && !intentToHyper)) ExecuteJumpLogic();
         }
 
-        ApplyMovementPhysics();
-
-        if (dashTimer > 0) dashTimer -= Time.deltaTime;
-        else isDashing = false;
-
         wasCrouching = isCrouching;
+    }
+
+    void FixedUpdate()
+    {
+        CheckGrounded();
+        CheckWallRun();
+        ApplyMovementPhysics();
     }
 
     void HandleLook()
@@ -165,7 +175,7 @@ public class MovementTech : MonoBehaviour
         canDash = false;
         dashTimer = dashDuration;
         dashCooldownTimer = dashCooldown;
-        isDashTechDownward = false; // NEW: Reset the flag for the new dash!
+        isDashTechDownward = false;
 
         Vector3 dashVelocity = playerCamera.forward * dashForce;
 
@@ -189,7 +199,6 @@ public class MovementTech : MonoBehaviour
             techActive = true;
             Vector3 forwardDir = new Vector3(playerCamera.forward.x, 0, playerCamera.forward.z).normalized;
 
-            // --- BINARY TECH: Crouched = Hyper, Standing = Super ---
             if (isDashTechDownward || isCrouching)
             {
                 // HYPER / WAVEDASH
@@ -227,6 +236,9 @@ public class MovementTech : MonoBehaviour
         Vector3 targetVelocity = moveDirection * walkSpeed;
         Vector3 currentHorizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 
+        bool isTurning = moveInput.magnitude > 0.1f && Vector3.Dot(targetVelocity.normalized, currentHorizontal.normalized) < -0.1f;
+        bool isLettingGo = moveInput.magnitude < 0.1f;
+
         if (isCrouching)
         {
             playerCollider.height = slideHeight;
@@ -244,8 +256,17 @@ public class MovementTech : MonoBehaviour
 
             if (techActive)
             {
-                appliedFriction = groundFriction * 0.02f;
-                if (isGrounded && currentHorizontal.magnitude <= walkSpeed + 1f && jumpCooldownTimer <= 0) techActive = false;
+                // EMERGENCY BRAKE CANCELLATION
+                if (isGrounded && (isLettingGo || isTurning) && !isCrouching)
+                {
+                    techActive = false;
+                    appliedFriction = groundFriction;
+                }
+                else
+                {
+                    appliedFriction = groundFriction * techFrictionMultiplier;
+                    if (isGrounded && currentHorizontal.magnitude <= walkSpeed + 1f && jumpCooldownTimer <= 0) techActive = false;
+                }
             }
             else if (isWallrunning)
             {
@@ -256,29 +277,30 @@ public class MovementTech : MonoBehaviour
                 appliedFriction = 0f;
 
                 Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
-                rb.AddForce(-wallNormal * 2f, ForceMode.Acceleration);
+
+                rb.AddForce(-wallNormal * 2f * Time.fixedDeltaTime, ForceMode.VelocityChange);
+                Vector3 wallForward = Vector3.ProjectOnPlane(playerCamera.forward, wallNormal).normalized;
+                if (currentHorizontal.magnitude < maxWallRunSpeed)
+                {
+                    rb.AddForce(wallForward * wallRunAcceleration, ForceMode.Acceleration);
+                }
             }
             else
             {
                 if (isCrouching && isGrounded && currentHorizontal.magnitude > walkSpeed * 0.5f)
                 {
                     appliedFriction = slideFriction;
-
-                    if (!wasCrouching)
-                    {
-                        rb.AddForce(playerCamera.forward * slideBoost, ForceMode.Impulse);
-                    }
+                    if (!wasCrouching) rb.AddForce(playerCamera.forward * slideBoost, ForceMode.Impulse);
                 }
                 else
                 {
-                    appliedFriction = isGrounded ? groundFriction : groundFriction * 0.3f;
+                    appliedFriction = isGrounded ? groundFriction : airDrag;
                 }
             }
 
             if (!isWallrunning)
             {
                 Vector3 velocityChange = (targetVelocity - currentHorizontal);
-
                 bool isSliding = isCrouching && isGrounded && currentHorizontal.magnitude > walkSpeed * 0.5f;
                 float currentAccelRate;
 
@@ -286,16 +308,22 @@ public class MovementTech : MonoBehaviour
                 {
                     currentAccelRate = appliedFriction;
                 }
-                else if (moveInput.magnitude > 0.1f)
+                else if (!isLettingGo)
                 {
-                    currentAccelRate = acceleration;
+                    float baseAccel = isGrounded ? acceleration : airAcceleration;
+                    currentAccelRate = isTurning ? baseAccel * turnMultiplier : baseAccel;
                 }
                 else
                 {
-                    currentAccelRate = appliedFriction;
+                   
+                    float overspeedMultiplier = isGrounded ? Mathf.Max(1f, currentHorizontal.magnitude / walkSpeed) : 1f;
+                    currentAccelRate = appliedFriction * overspeedMultiplier;
                 }
 
-                rb.AddForce(velocityChange * currentAccelRate, ForceMode.Acceleration);
+                float maxAccelThisFrame = currentAccelRate * 10f * Time.fixedDeltaTime;
+                Vector3 finalForce = Vector3.ClampMagnitude(velocityChange, maxAccelThisFrame);
+
+                rb.AddForce(finalForce, ForceMode.VelocityChange);
             }
         }
     }
@@ -344,7 +372,9 @@ public class MovementTech : MonoBehaviour
             {
                 Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
                 Vector3 wallForward = Vector3.ProjectOnPlane(flatVel, wallNormal).normalized;
-                rb.linearVelocity = new Vector3(wallForward.x * flatVel.magnitude, rb.linearVelocity.y, wallForward.z * flatVel.magnitude);
+
+                float currentForwardSpeed = Vector3.Dot(flatVel, wallForward);
+                rb.linearVelocity = new Vector3(wallForward.x * currentForwardSpeed, rb.linearVelocity.y, wallForward.z * currentForwardSpeed);
             }
         }
         else
