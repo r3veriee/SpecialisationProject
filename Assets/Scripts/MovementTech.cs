@@ -72,6 +72,7 @@ public class MovementTech : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 lookInput;
     private float xRotation = 0f;
+    private float yRotation = 0f;
 
     private bool isCrouching;
     private bool wasCrouching;
@@ -93,7 +94,7 @@ public class MovementTech : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-
+        yRotation = transform.eulerAngles.y;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         controls = new PlayerControls();
@@ -148,9 +149,14 @@ public class MovementTech : MonoBehaviour
     void HandleLook()
     {
         lookInput = controls.Player.Look.ReadValue<Vector2>();
+
+        // Calculate the absolute rotation for both up/down and left/right
         xRotation -= lookInput.y * mouseSensitivity;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
+        yRotation += lookInput.x * mouseSensitivity;
+
+        // Handle Camera Tilt (Wallrunning)
         float targetTilt = 0f;
         if (isWallrunning)
         {
@@ -158,9 +164,13 @@ public class MovementTech : MonoBehaviour
             else if (wallRight) targetTilt = wallRunTilt;
         }
         currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
-        playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
-        transform.Rotate(Vector3.up * (lookInput.x * mouseSensitivity));
 
+        // Apply Up/Down and Tilt to the Camera
+        playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
+
+        transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
+
+        // Handle crouching camera height shifts
         float targetCamHeight = isCrouching ? slidingCamHeight : standingCamHeight;
         Vector3 camLocalPos = playerCamera.localPosition;
         camLocalPos.y = Mathf.Lerp(camLocalPos.y, targetCamHeight, Time.deltaTime * crouchTransitionSpeed);
