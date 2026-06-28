@@ -5,25 +5,25 @@ using UnityEngine.InputSystem;
 public class MovementTech : MonoBehaviour
 {
     [Header("Core Movement Stats")]
-    public float walkSpeed = 10f;
-    public float acceleration = 4f;
-    public float groundFriction = 20f;
+    public float walkSpeed = 16f;
+    public float acceleration = 12f;
+    public float groundFriction = 25f;
 
     [Header("Anti-Slip & Air Control")]
-    public float airAcceleration = 12f;
+    public float airAcceleration = 18f;
     public float airDrag = 1.5f;
     public float turnMultiplier = 2.5f;
 
     [Header("Tech Stats")]
-    public float dashForce = 30f;
-    public float jumpForce = 8f;
+    public float dashForce = 45f;
+    public float jumpForce = 20f;
     public float hyperMultiplier = 3.5f;
     public float hyperVerticalMultiplier = 1.2f;
     public float superMultiplier = 1.75f;
     public float superVerticalMultiplier = 1.35f;
     public float techFrictionMultiplier = 0.15f;
     public float dashDuration = 0.25f;
-    public float dashCooldown = 1.5f;
+    public float dashCooldown = .7f;
     public float wavedashAngleThreshold = -0.1f;
 
     [Header("Slide")]
@@ -245,6 +245,7 @@ public class MovementTech : MonoBehaviour
         Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
         Vector3 targetVelocity = moveDirection * walkSpeed;
         Vector3 currentHorizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        rb.useGravity = !isWallrunning;
 
         bool isTurning = moveInput.magnitude > 0.1f && Vector3.Dot(targetVelocity.normalized, currentHorizontal.normalized) < -0.1f;
         bool isLettingGo = moveInput.magnitude < 0.1f;
@@ -280,15 +281,22 @@ public class MovementTech : MonoBehaviour
             }
             else if (isWallrunning)
             {
+                appliedFriction = 0f;
+
+                // Apply a GENTLE custom gravity so slowly slide down over time
+                // (Using half of the normal gravity so it feels like controlled friction)
+                rb.AddForce(Vector3.down * 15f, ForceMode.Acceleration);
+
+                // Cap the fall speed so you never drop like a rock
                 float yVel = rb.linearVelocity.y;
                 if (yVel < -wallRunGravity) yVel = -wallRunGravity;
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, yVel, rb.linearVelocity.z);
 
-                appliedFriction = 0f;
-
+                // Keep hugging the wall
                 Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
-
                 rb.AddForce(-wallNormal * 2f * Time.fixedDeltaTime, ForceMode.VelocityChange);
+
+                // Generate forward speed
                 Vector3 wallForward = Vector3.ProjectOnPlane(playerCamera.forward, wallNormal).normalized;
                 if (currentHorizontal.magnitude < maxWallRunSpeed)
                 {

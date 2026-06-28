@@ -3,7 +3,9 @@ using UnityEngine;
 public class SkyboxEvolver : MonoBehaviour
 {
     public Rigidbody playerRb;
-    public Material skyboxMaterial;
+
+    [Tooltip("Drag the material you put on the Giant Sphere in here!")]
+    public Material sphereMaterial;
 
     public float minSpeed = 5f;
     public float maxSpeed = 16f;
@@ -26,27 +28,28 @@ public class SkyboxEvolver : MonoBehaviour
 
     void Update()
     {
-        if (skyboxMaterial == null) return;
+        if (sphereMaterial == null || playerRb == null) return;
 
+        // Calculate Player Speed
         Vector3 flatVel = new Vector3(playerRb.linearVelocity.x, 0, playerRb.linearVelocity.z);
         float speedPercent = Mathf.InverseLerp(minSpeed, maxSpeed, flatVel.magnitude);
 
+        // Figure out the target color and target brightness
         Color targetColor = Color.Lerp(slowColor, fastColor, speedPercent);
         float targetExposure = Mathf.Lerp(minExposure, maxExposure, speedPercent);
 
+        // Smoothly transition to those targets
         currentColor = Color.Lerp(currentColor, targetColor, Time.deltaTime * transitionSpeed);
         currentExposure = Mathf.Lerp(currentExposure, targetExposure, Time.deltaTime * transitionSpeed);
 
-        skyboxMaterial.SetColor("_Tint", currentColor);
-        skyboxMaterial.SetFloat("_Exposure", currentExposure);
-    }
+        // Combine them
+        Color finalGlowColor = currentColor * currentExposure;
 
-    void OnApplicationQuit()
-    {
-        if (skyboxMaterial != null)
-        {
-            skyboxMaterial.SetColor("_Tint", Color.gray);
-            skyboxMaterial.SetFloat("_Exposure", 1f);
-        }
+        // Send it to the Giant Sphere
+        if (sphereMaterial.HasProperty("_Color"))
+            sphereMaterial.SetColor("_Color", finalGlowColor);
+
+        if (sphereMaterial.HasProperty("_BaseColor"))
+            sphereMaterial.SetColor("_BaseColor", finalGlowColor);
     }
 }
