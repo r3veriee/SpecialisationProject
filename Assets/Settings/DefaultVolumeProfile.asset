@@ -299,6 +299,28 @@ MonoBehaviour:
   cropToFit:
     m_OverrideState: 1
     m_Value: 1
+--- !u!114 &-2226558021377334107
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c308cac8267b2647b9cff1c014e6456, type: 3}
+  m_Name: GlitchVolume
+  m_EditorClassIdentifier: Assembly-CSharp::GlitchVolume
+  active: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0
+  scanlineJitter:
+    m_OverrideState: 1
+    m_Value: 10
+  colorDrift:
+    m_OverrideState: 1
+    m_Value: 1
 --- !u!114 &-1410297666881709256
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -468,6 +490,7 @@ MonoBehaviour:
   - {fileID: -6288072647309666549}
   - {fileID: 7518938298396184218}
   - {fileID: -1410297666881709256}
+  - {fileID: -2226558021377334107}
 --- !u!114 &853819529557874667
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -50,6 +50,28 @@ MonoBehaviour:
   dirtIntensity:
     m_OverrideState: 0
     m_Value: 0
+--- !u!114 &-6286641440391887608
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c308cac8267b2647b9cff1c014e6456, type: 3}
+  m_Name: GlitchVolume
+  m_EditorClassIdentifier: Assembly-CSharp::GlitchVolume
+  active: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0
+  scanlineJitter:
+    m_OverrideState: 1
+    m_Value: 0
+  colorDrift:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-3357603926938260329
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -97,6 +119,7 @@ MonoBehaviour:
   - {fileID: -3357603926938260329}
   - {fileID: 138375544747331106}
   - {fileID: 7678366312543448027}
+  - {fileID: -6286641440391887608}
 --- !u!114 &138375544747331106
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -117,7 +117,8 @@ public class MovementTech : MonoBehaviour
         else isDashing = false;
 
         isJumpHeld = controls.Player.Jump.ReadValue<float>() > 0.5f;
-
+        moveInput = controls.Player.Move.ReadValue<Vector2>();
+        lookInput = controls.Player.Look.ReadValue<Vector2>();  
         HandleLook();
 
         // Dash Reset
@@ -141,6 +142,7 @@ public class MovementTech : MonoBehaviour
 
     void FixedUpdate()
     {
+        rb.MoveRotation(Quaternion.Euler(0f, yRotation, 0f));
         CheckGrounded();
         CheckWallRun();
         ApplyMovementPhysics();
@@ -167,8 +169,6 @@ public class MovementTech : MonoBehaviour
 
         // Apply Up/Down and Tilt to the Camera
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
-
-        transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
 
         // Handle crouching camera height shifts
         float targetCamHeight = isCrouching ? slidingCamHeight : standingCamHeight;
@@ -241,8 +241,8 @@ public class MovementTech : MonoBehaviour
 
     void ApplyMovementPhysics()
     {
-        moveInput = controls.Player.Move.ReadValue<Vector2>();
-        Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
+        Vector3 moveDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
+
         Vector3 targetVelocity = moveDirection * walkSpeed;
         Vector3 currentHorizontal = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.useGravity = !isWallrunning;
