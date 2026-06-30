@@ -38,7 +38,7 @@ public class TurretHazard : MonoBehaviour
                 laserSight.SetPosition(0, transform.position);
                 laserSight.SetPosition(1, player.position);
                 laserSight.startColor = Color.Lerp(Color.yellow, Color.red, currentCharge / chargeTime);
-                laserSight.endColor = laserSight.startColor; // Make sure the whole beam changes color
+                laserSight.endColor = laserSight.startColor;
             }
 
             if (currentCharge >= chargeTime) Fire();
