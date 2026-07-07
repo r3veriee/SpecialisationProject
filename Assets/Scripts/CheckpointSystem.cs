@@ -34,7 +34,17 @@ public class CheckpointSystem : MonoBehaviour
         }
         else if (other.CompareTag("Killzone") && !isRespawning)
         {
-            StartCoroutine(RespawnRoutine());
+            // Look for the Death Manager and trigger the sequence instead
+            DeathSequenceManager deathManager = FindObjectOfType<DeathSequenceManager>();
+            if (deathManager != null)
+            {
+                deathManager.TriggerDeath();
+            }
+            else
+            {
+                // Fallback just in case the manager is missing
+                StartCoroutine(RespawnRoutine());
+            }
         }
     }
 

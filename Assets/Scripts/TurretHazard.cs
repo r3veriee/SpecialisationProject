@@ -54,9 +54,18 @@ public class TurretHazard : MonoBehaviour
 
     void Fire()
     {
-        // Instakill the player
-        CheckpointSystem cp = player.GetComponent<CheckpointSystem>();
-        if (cp != null) cp.Respawn();
+        // Try to trigger the cinematic death sequence
+        DeathSequenceManager deathManager = FindObjectOfType<DeathSequenceManager>();
+        if (deathManager != null)
+        {
+            deathManager.TriggerDeath();
+        }
+        else
+        {
+            // Fallback normal respawn
+            CheckpointSystem cp = player.GetComponent<CheckpointSystem>();
+            if (cp != null) cp.Respawn();
+        }
 
         // Reset the turret
         currentCharge = 0f;
