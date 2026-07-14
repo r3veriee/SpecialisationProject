@@ -18031,14 +18031,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurretHazard
   player: {fileID: 1522520398}
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 1647484877}
   range: 50
   chargeTime: 5
+  fireCooldown: 4.5
   visionBlockers:
     serializedVersion: 2
     m_Bits: 72
-  turretCanvas: {fileID: 1502713662}
   chargeFillImage: {fileID: 1688899388}
+  uiHeightOffset: 2.5
+  edgePadding: 60
 --- !u!136 &723328946
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -55460,6 +55462,8 @@ MonoBehaviour:
   playerMesh: {fileID: 402558790}
   disintegrateVFX: {fileID: 179373446}
   tauntText: {fileID: 963395933}
+  hudElementsToHide:
+  - {fileID: 1438772887}
   taunts:
   - SUB-OPTIMAL TRAJECTORY.
   - MOMENTUM.EXE STOPPED WORKING.
