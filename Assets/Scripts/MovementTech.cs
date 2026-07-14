@@ -79,12 +79,12 @@ public class MovementTech : MonoBehaviour
     private bool isGrounded;
     private bool isDashing;
     private bool techActive;
-    private bool canDash = true;
+    public bool canDash = true;
     private bool isJumpHeld;
     private bool isDashTechDownward;
 
     private float dashTimer;
-    private float dashCooldownTimer;
+    public float dashCooldownTimer;
     private float jumpBufferCounter;
     private float groundCoyoteCounter;
     private float jumpCooldownTimer;

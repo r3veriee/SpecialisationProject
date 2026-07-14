@@ -10,8 +10,12 @@ public class DeathSequenceManager : MonoBehaviour
     public GameObject playerMesh;
     public ParticleSystem disintegrateVFX;
 
-    [Header("UI Taunts")]
+    [Header("UI Taunts & HUD")]
     public TextMeshProUGUI tauntText;
+
+    [Tooltip("Drag any HUD elements you want to hide during death here (like the Dash Reticle)")]
+    public GameObject[] hudElementsToHide;
+
     public string[] taunts = {
         "SUB-OPTIMAL TRAJECTORY.",
         "MOMENTUM.EXE STOPPED WORKING.",
@@ -41,37 +45,39 @@ public class DeathSequenceManager : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.useGravity = false;
 
-        // Camera swap (Look at the body)
+        // turn off other hud elements
+        foreach (GameObject hudItem in hudElementsToHide)
+        {
+            if (hudItem != null) hudItem.SetActive(false);
+        }
+
         firstPersonCam.enabled = false;
         thirdPersonCam.enabled = true;
 
-        // Disintegrate
         if (playerMesh != null) playerMesh.SetActive(false);
         if (disintegrateVFX != null) disintegrateVFX.Play();
 
-        // Print the Taunt
         if (tauntText != null)
         {
             tauntText.text = taunts[Random.Range(0, taunts.Length)];
             tauntText.gameObject.SetActive(true);
         }
 
-        // Wait for the drama to sink in
         yield return new WaitForSeconds(2.0f);
 
-        // Tell CheckpointSystem to start fading and teleporting
         checkpointSystem.Respawn();
 
-        // Calculate EXACTLY how long it takes for the CheckpointSystem to fade to black
-        // (1 divided by the fadeSpeed gives us the time in seconds)
         float timeToFadeToBlack = 1f / checkpointSystem.fadeSpeed;
 
-        // Wait until the screen is completely black
         yield return new WaitForSeconds(timeToFadeToBlack + 0.1f);
 
-        // WHILE THE SCREEN IS BLACK: Reset the cameras and player model invisibly
         if (tauntText != null) tauntText.gameObject.SetActive(false);
         if (playerMesh != null) playerMesh.SetActive(true);
+
+        foreach (GameObject hudItem in hudElementsToHide)
+        {
+            if (hudItem != null) hudItem.SetActive(true);
+        }
 
         thirdPersonCam.enabled = false;
         firstPersonCam.enabled = true;
