@@ -27,14 +27,11 @@ public class CheckpointSystem : MonoBehaviour
     {
         if (other.CompareTag("Checkpoint"))
         {
-            currentRespawnPos = transform.position;
-
-            // Turn off the checkpoint so we don't trigger it again
+            currentRespawnPos = other.transform.position;
             other.enabled = false;
         }
         else if (other.CompareTag("Killzone") && !isRespawning)
         {
-            // Look for the Death Manager and trigger the sequence instead
             DeathSequenceManager deathManager = FindObjectOfType<DeathSequenceManager>();
             if (deathManager != null)
             {
@@ -42,7 +39,6 @@ public class CheckpointSystem : MonoBehaviour
             }
             else
             {
-                // Fallback just in case the manager is missing
                 StartCoroutine(RespawnRoutine());
             }
         }
