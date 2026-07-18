@@ -2,24 +2,71 @@ using UnityEngine;
 
 public class BouncePad : MonoBehaviour
 {
-    public float bounceForce = 60f;
+    [Header("Tuned Launch Settings")]
+    [Tooltip("How fast it shoots the player horizontally")]
+    public float horizontalForce = 40f;
+
+    [Tooltip("How high it shoots the player vertically")]
+    public float verticalForce = 15f;
+
+    [Tooltip("If true, ignores how fast the player was falling and forces a perfect arc.")]
+    public bool overrideVelocity = true;
+
+    [Header("Feel")]
+    public ParticleSystem bounceParticles;
+    public AudioSource bounceSound;
+
+    [Header("Safety")]
+    public float padCooldown = 0.2f;
+    private float cooldownTimer = 0f;
+
+    void Update()
+    {
+        if (cooldownTimer > 0) cooldownTimer -= Time.deltaTime;
+    }
 
     void OnTriggerEnter(Collider other)
     {
+        if (cooldownTimer > 0) return;
+
         if (other.CompareTag("Player"))
         {
-            Rigidbody rb = other.GetComponent<Rigidbody>();
-            if (rb != null)
+            Rigidbody playerRb = other.GetComponent<Rigidbody>();
+            if (playerRb != null)
             {
-                // Kill current momentum to guarantee a mathematically perfect arc
-                rb.linearVelocity = Vector3.zero;
+                Vector3 padDirection = transform.up;
+                Vector3 flatDirection = new Vector3(padDirection.x, 0, padDirection.z).normalized;
 
-                // Launch in the direction the top of the pad is facing
-                rb.linearVelocity = transform.up * bounceForce;
+                Vector3 finalLaunchVelocity;
 
-                // Reset dash so they can style in mid-air
-                MovementTech moveScript = other.GetComponent<MovementTech>();
-                if (moveScript != null) moveScript.ResetDash();
+                if (flatDirection.magnitude < 0.1f)
+                {
+                    finalLaunchVelocity = Vector3.up * verticalForce;
+                }
+                else
+                {
+
+                    finalLaunchVelocity = (flatDirection * horizontalForce) + (Vector3.up * verticalForce);
+                }
+
+                if (overrideVelocity)
+                {
+                    playerRb.linearVelocity = Vector3.zero;
+                }
+
+                playerRb.AddForce(finalLaunchVelocity, ForceMode.VelocityChange);
+
+                MovementTech movement = other.GetComponent<MovementTech>();
+                if (movement != null)
+                {
+                    movement.dashCooldownTimer = 0f;
+                    movement.canDash = true;
+                }
+
+                if (bounceParticles != null) bounceParticles.Play();
+                if (bounceSound != null) bounceSound.Play();
+
+                cooldownTimer = padCooldown;
             }
         }
     }

@@ -36,6 +36,25 @@ public class PrismShard : MonoBehaviour
                 decayScript.TriggerColourBurst(1.5f);
             }
 
+            CheckpointSystem checkpoint = other.GetComponent<CheckpointSystem>();
+            if (checkpoint != null)
+            {
+                Rigidbody playerRb = other.GetComponent<Rigidbody>();
+                if (playerRb != null)
+                {
+                    playerRb.position = checkpoint.currentRespawnPos;
+
+                    playerRb.linearVelocity = Vector3.zero;
+                    playerRb.angularVelocity = Vector3.zero;
+                }
+                else
+                {
+                    other.transform.position = checkpoint.currentRespawnPos;
+                }
+            }
+
+            MovementTech movement = other.GetComponent<MovementTech>();
+            if (movement != null) movement.ResetDash();
             Destroy(gameObject);
         }
     }
