@@ -13,7 +13,6 @@ public class TurretHazard : MonoBehaviour
     [Tooltip("The exact name of the Layout Group on your Canvas")]
     public string containerName = "TurretWarningContainer";
 
-    // This is this specific turret's personal UI image
     private Image myUI;
 
     [Header("Stats")]
@@ -48,9 +47,6 @@ public class TurretHazard : MonoBehaviour
     {
         if (player == null) return;
 
-        // ==========================================
-        // STATE 1: COOLDOWN (Turret is reloading)
-        // ==========================================
         if (cooldownTimer > 0)
         {
             cooldownTimer -= Time.deltaTime;
@@ -58,7 +54,6 @@ public class TurretHazard : MonoBehaviour
             if (myUI != null)
             {
                 myUI.gameObject.SetActive(true);
-                // Drains the radial pie-chart backwards
                 myUI.fillAmount = cooldownTimer / fireCooldown;
                 myUI.color = Color.cyan;
             }
@@ -67,9 +62,6 @@ public class TurretHazard : MonoBehaviour
             return;
         }
 
-        // ==========================================
-        // STATE 2: CHECK LINE OF SIGHT
-        // ==========================================
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
         float distToPlayer = Vector3.Distance(transform.position, player.position);
         bool hasLineOfSight = distToPlayer <= range && !Physics.Raycast(transform.position, dirToPlayer, distToPlayer, visionBlockers);
@@ -88,7 +80,6 @@ public class TurretHazard : MonoBehaviour
             if (myUI != null)
             {
                 myUI.gameObject.SetActive(true);
-                // Fills the radial pie-chart forwards
                 myUI.fillAmount = currentCharge / chargeTime;
                 myUI.color = Color.Lerp(Color.yellow, Color.red, currentCharge / chargeTime);
             }
@@ -97,9 +88,6 @@ public class TurretHazard : MonoBehaviour
         }
         else
         {
-            // ==========================================
-            // STATE 3: IDLE 
-            // ==========================================
             currentCharge = 0f;
             if (laserSight != null) laserSight.enabled = false;
 
