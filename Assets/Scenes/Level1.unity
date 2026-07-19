@@ -314,7 +314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BouncePad
   horizontalForce: 70
-  verticalForce: 15
+  verticalForce: 24
   overrideVelocity: 1
   bounceParticles: {fileID: 0}
   bounceSound: {fileID: 0}
@@ -2463,7 +2463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BouncePad
   horizontalForce: 70
-  verticalForce: 15
+  verticalForce: 30
   overrideVelocity: 1
   bounceParticles: {fileID: 0}
   bounceSound: {fileID: 0}
@@ -20584,7 +20584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed5c39f28aca0aa499a8db216cd83d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BouncePad
-  horizontalForce: 90
+  horizontalForce: 70
   verticalForce: 20
   overrideVelocity: 1
   bounceParticles: {fileID: 0}
@@ -66497,7 +66497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1531385066
 Transform:
   m_ObjectHideFlags: 0
@@ -70458,7 +70458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1629497475
 Transform:
   m_ObjectHideFlags: 0
@@ -72719,7 +72719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BouncePad
   horizontalForce: 70
-  verticalForce: 15
+  verticalForce: 24
   overrideVelocity: 1
   bounceParticles: {fileID: 0}
   bounceSound: {fileID: 0}
