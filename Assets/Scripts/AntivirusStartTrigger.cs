@@ -6,14 +6,10 @@ public class AntivirusStartTrigger : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && grid != null)
         {
-            if (grid != null)
-            {
-                // Reset it just in case, then start the chase
-                grid.ResetGrid();
-                grid.StartChasing();
-            }
+            grid.ResetGrid();
+            grid.StartChasing();
         }
     }
 }

@@ -47,8 +47,21 @@ public class AntivirusGrid : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            CheckpointSystem cp = other.GetComponent<CheckpointSystem>();
-            if (cp != null) cp.Respawn();
+            // Trigger the Cinematic Death
+            DeathSequenceManager deathManager = FindObjectOfType<DeathSequenceManager>();
+            if (deathManager != null)
+            {
+                deathManager.TriggerDeath();
+            }
+            else
+            {
+                // Fallback just in case the manager is missing from the scene
+                CheckpointSystem cp = other.GetComponent<CheckpointSystem>();
+                if (cp != null) cp.Respawn();
+            }
+
+            // Reset the grid instantly while the screen fades to black
+            // This ensures it doesn't instantly spawn-kill the player when they wake up at the bottom
             ResetGrid();
         }
     }
