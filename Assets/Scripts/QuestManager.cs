@@ -12,6 +12,7 @@ public class QuestManager : MonoBehaviour
     [Header("UI & Portals")]
     public TextMeshProUGUI questText;
     public GameObject spirePortal;
+    public GameObject finalTerminalDoor;
 
     [Header("Level Geometry Swapping")]
     [Tooltip("Drag the 3 Trial paths here so we can REVEAL them!")]
@@ -75,10 +76,12 @@ public class QuestManager : MonoBehaviour
     {
         if (questText != null)
         {
-            questText.text = "SYSTEM POWERED. ENTER THE SPIRE.";
+            questText.text = "TOWER UNLOCKED.";
             questText.color = Color.green;
         }
 
+        // Turn on the portal
         if (spirePortal != null) spirePortal.SetActive(true);
+        if (finalTerminalDoor != null) finalTerminalDoor.SetActive(false);
     }
 }
