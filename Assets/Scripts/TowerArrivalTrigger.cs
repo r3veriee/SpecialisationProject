@@ -2,18 +2,15 @@ using UnityEngine;
 
 public class TowerArrivalTrigger : MonoBehaviour
 {
-    private bool hasArrived = false;
+    private bool hasTriggered = false;
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !hasArrived)
+        if (other.CompareTag("Player") && !hasTriggered)
         {
-            hasArrived = true;
+            hasTriggered = true;
 
-            if (QuestManager.Instance != null)
-            {
-                QuestManager.Instance.RevealTrials();
-            }
+            if (QuestManager.Instance != null) QuestManager.Instance.RevealTrials();
         }
     }
 }

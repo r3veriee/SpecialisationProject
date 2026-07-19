@@ -27,13 +27,18 @@ public class SideQuestManager : MonoBehaviour
         if (questActive)
         {
             questTimeLeft -= Time.deltaTime;
+
             if (questTimeLeft <= 0)
             {
                 questTimeLeft = 0;
                 FailQuest();
+
                 FindObjectOfType<CheckpointSystem>().Respawn();
             }
-            UpdateQuestUI();
+            else
+            {
+                UpdateQuestUI();
+            }
         }
     }
 
@@ -41,10 +46,10 @@ public class SideQuestManager : MonoBehaviour
     {
         questTimeLeft = timeLimit;
         questActive = true;
-        questTimerText.gameObject.SetActive(true);
+        if (questTimerText != null) questTimerText.gameObject.SetActive(true);
 
         activeNPC = npc;
-        activeNPC.SetActive(false);
+        if (activeNPC != null) activeNPC.SetActive(false);
 
         collectedRings.Clear();
     }
@@ -54,7 +59,6 @@ public class SideQuestManager : MonoBehaviour
         if (questActive)
         {
             questTimeLeft += bonusTime;
-
             collectedRings.Add(ring);
             ring.SetActive(false);
         }
@@ -62,13 +66,13 @@ public class SideQuestManager : MonoBehaviour
 
     public void CompleteQuest()
     {
+        if (!questActive) return;
         questActive = false;
         if (questTimerText != null)
         {
             questTimerText.color = Color.green;
-            questTimerText.text = "SIDE QUEST COMPLETE";
+            questTimerText.text = "TRIAL COMPLETE";
         }
-
         activeNPC = null;
         collectedRings.Clear();
     }
@@ -81,7 +85,7 @@ public class SideQuestManager : MonoBehaviour
         if (questTimerText != null)
         {
             questTimerText.color = panicColor;
-            questTimerText.text = "QUEST FAILED";
+            questTimerText.text = "TRIAL FAILED";
         }
 
         if (activeNPC != null) activeNPC.SetActive(true);
@@ -90,6 +94,7 @@ public class SideQuestManager : MonoBehaviour
         {
             if (ring != null) ring.SetActive(true);
         }
+
         collectedRings.Clear();
     }
 
@@ -97,8 +102,10 @@ public class SideQuestManager : MonoBehaviour
     {
         if (questTimerText == null) return;
         questTimerText.color = questTimeLeft <= 5f ? panicColor : normalColor;
-        int seconds = Mathf.FloorToInt(questTimeLeft);
-        float milliseconds = (questTimeLeft % 1f) * 1000f;
-        questTimerText.text = string.Format("QUEST: {0:00}.{1:000}", seconds, milliseconds);
+
+        int minutes = Mathf.FloorToInt(questTimeLeft / 60f);
+        int seconds = Mathf.FloorToInt(questTimeLeft % 60f);
+        float milliseconds = (questTimeLeft * 1000f) % 1000f;
+        questTimerText.text = string.Format("{0:00}:{1:00}.{2:000}", minutes, seconds, milliseconds);
     }
 }
