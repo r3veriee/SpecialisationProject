@@ -142,7 +142,7 @@ public class MovementTech : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.MoveRotation(Quaternion.Euler(0f, yRotation, 0f));
+        //rb.MoveRotation(Quaternion.Euler(0f, yRotation, 0f));
         CheckGrounded();
         CheckWallRun();
         ApplyMovementPhysics();
@@ -157,7 +157,7 @@ public class MovementTech : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         yRotation += lookInput.x * mouseSensitivity;
-
+        transform.rotation = Quaternion.Euler(0f, yRotation, 0f); // TEST FIXING
         // Handle Camera Tilt (Wallrunning)
         float targetTilt = 0f;
         if (isWallrunning)
