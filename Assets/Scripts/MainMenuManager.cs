@@ -13,7 +13,7 @@ public class MainMenuManager : MonoBehaviour
     public void PlayGame()
     {
         // Make sure your first level is named exactly this in your files
-        SceneManager.LoadScene("TestScene2");
+        SceneManager.LoadScene("Level1");
     }
 
     public void QuitGame()

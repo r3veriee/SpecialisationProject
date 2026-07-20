@@ -110,6 +110,7 @@ public class MovementTech : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0f) return;
         if (jumpCooldownTimer > 0) jumpCooldownTimer -= Time.deltaTime;
         if (dashCooldownTimer > 0) dashCooldownTimer -= Time.deltaTime;
         if (jumpBufferCounter > 0) jumpBufferCounter -= Time.deltaTime;
