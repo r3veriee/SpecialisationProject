@@ -169,8 +169,8 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.0050781732, g: 0.0101563465, b: 0.0050781732, a: 0.2523261}
-    - _Color: {r: 0.0050781732, g: 0.0101563465, b: 0.0050781732, a: 0.2523261}
+    - _BaseColor: {r: 0, g: 0, b: 0, a: 0.2}
+    - _Color: {r: 0, g: 0, b: 0, a: 0.2}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.36899996, g: 0.34899998, b: 0.34099993, a: 1}
     - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}

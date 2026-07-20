@@ -18,8 +18,8 @@ public class ChromaticDecay : MonoBehaviour
     private ColorAdjustments colorAdjustments;
     private ChromaticAberration chromaticAberration;
     private float burstTimer = 0f;
-
     private float currentMinSaturation;
+    private bool isPermanentlyDisabled = false;
 
     void Start()
     {
@@ -30,10 +30,11 @@ public class ChromaticDecay : MonoBehaviour
 
     void Update()
     {
-        if (colorAdjustments == null) return;
+        if (isPermanentlyDisabled || colorAdjustments == null) return;
 
-        Vector3 flatVel = new Vector3(playerRb.linearVelocity.x, 0, playerRb.linearVelocity.z);
-        float currentSpeed = flatVel.magnitude;
+        //Vector3 flatVel = new Vector3(playerRb.linearVelocity.x, 0, playerRb.linearVelocity.z);
+        //float currentSpeed = flatVel.magnitude;
+        float currentSpeed = playerRb.linearVelocity.magnitude;
         float speedPercent = Mathf.InverseLerp(minSpeed, maxSpeed, currentSpeed);
 
         float targetSaturation;
@@ -43,7 +44,7 @@ public class ChromaticDecay : MonoBehaviour
         {
             burstTimer -= Time.deltaTime;
             targetSaturation = maxSaturation;
-            targetCA = maxChromaticAberration;
+            targetCA = 0f;
         }
         else
         {
@@ -52,7 +53,6 @@ public class ChromaticDecay : MonoBehaviour
         }
 
         colorAdjustments.saturation.value = Mathf.Lerp(colorAdjustments.saturation.value, targetSaturation, Time.deltaTime * transitionSpeed);
-
         if (chromaticAberration != null)
         {
             chromaticAberration.intensity.value = Mathf.Lerp(chromaticAberration.intensity.value, targetCA, Time.deltaTime * transitionSpeed);
@@ -66,23 +66,15 @@ public class ChromaticDecay : MonoBehaviour
 
     public void ReduceDecayPotency(float buffAmount)
     {
-        // Calculate how much saturation to give back based on the shard's percentage
         float totalSaturationRange = maxSaturation - minSaturation;
         float saturationBoost = totalSaturationRange * buffAmount;
-
         currentMinSaturation += saturationBoost;
-
-        // Cap it so the player can never become completely immune to the mechanic
-        if (currentMinSaturation > maxSaturation - 10f)
-        {
-            currentMinSaturation = maxSaturation - 10f;
-        }
+        if (currentMinSaturation > maxSaturation - 10f) currentMinSaturation = maxSaturation - 10f;
     }
-
-    public void RestoreFullColor()
+    public void DisableEffect()
     {
-        TriggerColourBurst(2f);
+        isPermanentlyDisabled = true;
         if (colorAdjustments != null) colorAdjustments.saturation.value = maxSaturation;
-        if (chromaticAberration != null) chromaticAberration.intensity.value = maxChromaticAberration;
+        if (chromaticAberration != null) chromaticAberration.intensity.value = 0f;
     }
 }

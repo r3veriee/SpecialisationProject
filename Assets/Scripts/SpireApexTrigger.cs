@@ -3,7 +3,6 @@ using UnityEngine;
 public class SpireApexTrigger : MonoBehaviour
 {
     [Header("Antivirus")]
-    [Tooltip("Drag the Antivirus Grid here to turn it OFF")]
     public AntivirusGrid gridToDisable;
 
     [Header("Exhaustion Settings")]
@@ -17,14 +16,11 @@ public class SpireApexTrigger : MonoBehaviour
         {
             hasTriggered = true;
 
-            // Permanently disable the Antivirus Grid
             if (gridToDisable != null) gridToDisable.DisableGrid();
 
-            // Set the new Checkpoint to the top rim
             CheckpointSystem cp = other.GetComponent<CheckpointSystem>();
             if (cp != null) cp.currentRespawnPos = transform.position;
 
-            // Strip their dash and walk speed
             MovementTech move = other.GetComponent<MovementTech>();
             if (move != null)
             {

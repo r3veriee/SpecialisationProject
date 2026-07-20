@@ -4,11 +4,17 @@ using System.Collections;
 
 public class GameFinaleManager : MonoBehaviour
 {
+    [Header("Cinematic Cameras")]
     public Camera mainPlayerCam;
     public Camera orbitCinematicCam;
     public Transform cameraPivot;
     public float cameraSpinSpeed = 25f;
 
+    [Header("Visual Effects to Disable")]
+    public GlitchEffect glitchScript;
+    public ChromaticDecay chromaticScript;
+
+    [Header("Visuals & UI")]
     public CanvasGroup blackFadeScreen;
     public TextMeshProUGUI thankYouText;
     public float timeBeforeFadeStarts = 2f;
@@ -44,15 +50,17 @@ public class GameFinaleManager : MonoBehaviour
 
         player.SetActive(false);
 
+        if (glitchScript != null) glitchScript.DisableEffect();
+        if (chromaticScript != null) chromaticScript.DisableEffect();
+
+        RenderSettings.fog = false;
+        if (orbitCinematicCam != null) orbitCinematicCam.clearFlags = CameraClearFlags.Skybox;
         if (mainPlayerCam != null) mainPlayerCam.enabled = false;
         if (orbitCinematicCam != null)
         {
             orbitCinematicCam.enabled = true;
             orbitCinematicCam.transform.SetParent(cameraPivot);
         }
-
-        ChromaticDecay decayScript = FindObjectOfType<ChromaticDecay>();
-        if (decayScript != null) decayScript.TriggerColourBurst(5f);
 
         float timer = 0f;
         while (timer < timeBeforeFadeStarts)

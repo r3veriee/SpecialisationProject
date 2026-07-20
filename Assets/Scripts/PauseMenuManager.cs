@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PauseMenuManager : MonoBehaviour
 {
@@ -10,13 +11,12 @@ public class PauseMenuManager : MonoBehaviour
 
     void Start()
     {
-        // Ensure it starts hidden
         if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (isPaused) ResumeGame();
             else PauseGame();
@@ -26,8 +26,8 @@ public class PauseMenuManager : MonoBehaviour
     public void ResumeGame()
     {
         pauseMenuPanel.SetActive(false);
-        Time.timeScale = 1f; // Unfreeze time
-        Cursor.lockState = CursorLockMode.Locked; // Lock cursor back to game
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         isPaused = false;
     }
@@ -35,8 +35,8 @@ public class PauseMenuManager : MonoBehaviour
     void PauseGame()
     {
         pauseMenuPanel.SetActive(true);
-        Time.timeScale = 0f; // Freeze time
-        Cursor.lockState = CursorLockMode.None; // Unlock cursor for UI
+        Time.timeScale = 0f; 
+        Cursor.lockState = CursorLockMode.None; 
         Cursor.visible = true;
         isPaused = true;
     }
