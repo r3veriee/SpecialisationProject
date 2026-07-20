@@ -1,22 +1,23 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // <--- NEW: Needed to change scenes
 using TMPro;
 using System.Collections;
 
 public class GameFinaleManager : MonoBehaviour
 {
-    [Header("Cinematic Cameras")]
     public Camera mainPlayerCam;
     public Camera orbitCinematicCam;
     public Transform cameraPivot;
     public float cameraSpinSpeed = 25f;
 
-    [Header("Visual Effects to Disable")]
     public GlitchEffect glitchScript;
     public ChromaticDecay chromaticScript;
 
-    [Header("Visuals & UI")]
     public CanvasGroup blackFadeScreen;
     public TextMeshProUGUI thankYouText;
+
+    public GameObject[] uiElementsToHide; 
+
     public float timeBeforeFadeStarts = 2f;
     public float fadeSpeed = 0.5f;
 
@@ -50,11 +51,17 @@ public class GameFinaleManager : MonoBehaviour
 
         player.SetActive(false);
 
+        foreach (GameObject ui in uiElementsToHide)
+        {
+            if (ui != null) ui.SetActive(false);
+        }
+
         if (glitchScript != null) glitchScript.DisableEffect();
         if (chromaticScript != null) chromaticScript.DisableEffect();
 
         RenderSettings.fog = false;
         if (orbitCinematicCam != null) orbitCinematicCam.clearFlags = CameraClearFlags.Skybox;
+
         if (mainPlayerCam != null) mainPlayerCam.enabled = false;
         if (orbitCinematicCam != null)
         {
@@ -104,5 +111,8 @@ public class GameFinaleManager : MonoBehaviour
                 yield return null;
             }
         }
+
+        yield return new WaitForSeconds(7f);
+        SceneManager.LoadScene("MainMenu");
     }
 }
