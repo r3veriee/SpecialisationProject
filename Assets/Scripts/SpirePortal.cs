@@ -20,7 +20,6 @@ public class SpirePortal : MonoBehaviour
 
     void Start()
     {
-        // Make sure the end screen is hidden while playing
         if (blackScreen != null) blackScreen.gameObject.SetActive(false);
         if (levelCompleteText != null) levelCompleteText.gameObject.SetActive(false);
         if (finalTimeText != null) finalTimeText.gameObject.SetActive(false);
@@ -37,7 +36,6 @@ public class SpirePortal : MonoBehaviour
 
     IEnumerator LevelCompleteSequence(GameObject player)
     {
-        // Freeze the Player & Stop the Global Timer
         Rigidbody rb = player.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -45,9 +43,19 @@ public class SpirePortal : MonoBehaviour
             rb.linearVelocity = Vector3.zero;
         }
 
-        if (TimeTrialManager.Instance != null) TimeTrialManager.Instance.StopTimer();
+        if (TimeTrialManager.Instance != null)
+        {
+            TimeTrialManager.Instance.StopTimer();
+            // Save Level 1 Time
+            PlayerPrefs.SetFloat("Level1Time", TimeTrialManager.Instance.currentTime);
+        }
 
-        // Fade completely to black
+        // Save Level 1 Deaths, reset Session for Level 2
+        int currentLevelDeaths = PlayerPrefs.GetInt("SessionDeaths", 0);
+        PlayerPrefs.SetInt("Level1Deaths", currentLevelDeaths);
+        PlayerPrefs.SetInt("SessionDeaths", 0);
+        PlayerPrefs.Save();
+
         if (blackScreen != null)
         {
             blackScreen.gameObject.SetActive(true);
@@ -60,17 +68,14 @@ public class SpirePortal : MonoBehaviour
             }
         }
 
-        // Turn on the Scoreboard Text
         if (levelCompleteText != null) levelCompleteText.gameObject.SetActive(true);
         if (finalTimeText != null && TimeTrialManager.Instance != null)
         {
             finalTimeText.gameObject.SetActive(true);
-            finalTimeText.text = "FINAL TIME:\n" + TimeTrialManager.Instance.timerText.text;
+            finalTimeText.text = "FINAL TIME:\n" + TimeTrialManager.Instance.timerText.text + "\nDEATHS: " + currentLevelDeaths;
         }
 
         yield return new WaitForSeconds(timeToReadScore);
-
-        // Load the Spire
         SceneManager.LoadScene(nextSceneName);
     }
 }

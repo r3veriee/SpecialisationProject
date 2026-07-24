@@ -11,7 +11,7 @@ public class TimeTrialManager : MonoBehaviour
     public Color finishedColor = Color.green;
     public Color failedColor = Color.red;
 
-    private float currentTime = 0f;
+    public float currentTime = 0f;
     private bool isRunning = false;
 
     void Awake()

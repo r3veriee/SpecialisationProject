@@ -53,10 +53,12 @@ public class CheckpointSystem : MonoBehaviour
     {
         isRespawning = true;
 
-        // Instantly fail any active side quests the moment the player dies
+        int currentDeaths = PlayerPrefs.GetInt("SessionDeaths", 0);
+        PlayerPrefs.SetInt("SessionDeaths", currentDeaths + 1);
+        PlayerPrefs.Save();
+
         if (SideQuestManager.Instance != null) SideQuestManager.Instance.FailQuest();
 
-        // Fade out to black
         float alpha = 0f;
         while (alpha < 1f)
         {
@@ -65,7 +67,6 @@ public class CheckpointSystem : MonoBehaviour
             yield return null;
         }
 
-        // Safely teleport the Rigidbody and kill all momentum so don't slide off the respawn point
         if (rb != null)
         {
             rb.position = currentRespawnPos;
@@ -81,13 +82,13 @@ public class CheckpointSystem : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
 
-        // Fade back in
         while (alpha > 0f)
         {
             alpha -= Time.deltaTime * fadeSpeed;
             if (fadeScreen != null) fadeScreen.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
+
         isRespawning = false;
     }
 }
