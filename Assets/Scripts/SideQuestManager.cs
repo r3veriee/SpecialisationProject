@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using System.Collections;
 
 public class SideQuestManager : MonoBehaviour
 {
@@ -20,6 +21,11 @@ public class SideQuestManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+
+    void Start()
+    {
+        if (questTimerText != null) questTimerText.gameObject.SetActive(false);
     }
 
     void Update()
@@ -75,6 +81,7 @@ public class SideQuestManager : MonoBehaviour
         }
         activeNPC = null;
         collectedRings.Clear();
+        StartCoroutine(HideQuestTextAfterDelay());
     }
 
     public void FailQuest()
@@ -98,14 +105,20 @@ public class SideQuestManager : MonoBehaviour
         collectedRings.Clear();
     }
 
+    private IEnumerator HideQuestTextAfterDelay()
+    {
+        yield return new WaitForSeconds(2f);
+        if (questTimerText != null) questTimerText.gameObject.SetActive(false);
+    }
+
     void UpdateQuestUI()
     {
-        if (questTimerText == null) return;
-        questTimerText.color = questTimeLeft <= 5f ? panicColor : normalColor;
+            if (questTimerText == null) return;
+            questTimerText.color = questTimeLeft <= 5f ? panicColor : normalColor;
 
-        int minutes = Mathf.FloorToInt(questTimeLeft / 60f);
-        int seconds = Mathf.FloorToInt(questTimeLeft % 60f);
-        float milliseconds = (questTimeLeft * 1000f) % 1000f;
-        questTimerText.text = string.Format("{0:00}:{1:00}.{2:000}", minutes, seconds, milliseconds);
+            int minutes = Mathf.FloorToInt(questTimeLeft / 60f);
+            int seconds = Mathf.FloorToInt(questTimeLeft % 60f);
+            float milliseconds = (questTimeLeft * 1000f) % 1000f;
+            questTimerText.text = string.Format("{0:00}:{1:00}.{2:000}", minutes, seconds, milliseconds);
     }
 }

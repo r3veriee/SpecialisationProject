@@ -15,6 +15,8 @@ public class ChromaticDecay : MonoBehaviour
     public float maxChromaticAberration = 0.8f;
     public float transitionSpeed = 4f;
 
+    [HideInInspector] public float accessibilityScale = 1f;
+
     private ColorAdjustments colorAdjustments;
     private ChromaticAberration chromaticAberration;
     private float burstTimer = 0f;
@@ -49,7 +51,7 @@ public class ChromaticDecay : MonoBehaviour
         else
         {
             targetSaturation = Mathf.Lerp(currentMinSaturation, maxSaturation, speedPercent);
-            targetCA = Mathf.Lerp(0f, maxChromaticAberration, speedPercent);
+            targetCA = Mathf.Lerp(0f, maxChromaticAberration, speedPercent) * accessibilityScale;
         }
 
         colorAdjustments.saturation.value = Mathf.Lerp(colorAdjustments.saturation.value, targetSaturation, Time.deltaTime * transitionSpeed);

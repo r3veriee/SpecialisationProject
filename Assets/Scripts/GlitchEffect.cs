@@ -19,6 +19,8 @@ public class GlitchEffect : MonoBehaviour
     [Header("Smoothing")]
     public float transitionSpeed = 8f;
 
+    [HideInInspector] public float accessibilityScale = 1f;
+
     private GlitchVolume glitchVolume;
     private bool isPermanentlyDisabled = false;
 
@@ -43,9 +45,9 @@ public class GlitchEffect : MonoBehaviour
         float speedPercent = Mathf.InverseLerp(minSpeed, maxSpeed, currentSpeed);
         float glitchMultiplier = 1f - speedPercent;
 
-        float targetIntensity = maxIntensity * glitchMultiplier;
-        float targetJitter = maxScanlineJitter * glitchMultiplier;
-        float targetDrift = maxColorDrift * glitchMultiplier;
+        float targetIntensity = (maxIntensity * glitchMultiplier) * accessibilityScale;
+        float targetJitter = (maxScanlineJitter * glitchMultiplier) * accessibilityScale;
+        float targetDrift = (maxColorDrift * glitchMultiplier) * accessibilityScale;
 
         glitchVolume.intensity.value = Mathf.Lerp(glitchVolume.intensity.value, targetIntensity, Time.deltaTime * transitionSpeed);
         glitchVolume.scanlineJitter.value = Mathf.Lerp(glitchVolume.scanlineJitter.value, targetJitter, Time.deltaTime * transitionSpeed);

@@ -9,10 +9,10 @@ public class AccessibilityManager : MonoBehaviour
 
     [Header("References")]
     public GlitchEffect glitchScript;
+    public ChromaticDecay chromaticScript;
 
     [Header("Material Brightness")]
     public Material targetMaterial;
-
     public string colorPropertyName = "_Color";
 
     private Color originalColor;
@@ -22,29 +22,27 @@ public class AccessibilityManager : MonoBehaviour
         if (glitchSlider != null)
         {
             glitchSlider.onValueChanged.AddListener(UpdateGlitch);
+            glitchSlider.value = 1f;
         }
 
         if (brightnessSlider != null && targetMaterial != null)
         {
             originalColor = targetMaterial.GetColor(colorPropertyName);
-
             brightnessSlider.onValueChanged.AddListener(UpdateBrightness);
+            brightnessSlider.value = 1f;
         }
     }
 
     public void UpdateGlitch(float value)
     {
-        if (glitchScript != null)
-        {
-            // glitchScript.intensity = value; 
-        }
+        if (glitchScript != null) glitchScript.accessibilityScale = value;
+        if (chromaticScript != null) chromaticScript.accessibilityScale = value;
     }
 
     public void UpdateBrightness(float value)
     {
         if (targetMaterial != null)
         {
- 
             targetMaterial.SetColor(colorPropertyName, originalColor * value);
         }
     }

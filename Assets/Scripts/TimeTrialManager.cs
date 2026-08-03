@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class TimeTrialManager : MonoBehaviour
 {
@@ -47,6 +48,14 @@ public class TimeTrialManager : MonoBehaviour
         if (!isRunning) return;
         isRunning = false;
         if (timerText != null) timerText.color = finishedColor;
+        StartCoroutine(ShutdownTimerSequence());
+    }
+
+    IEnumerator ShutdownTimerSequence()
+    {
+        yield return new WaitForSeconds(3f);
+        if (timerText != null) timerText.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     public void CancelTimer()

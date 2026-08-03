@@ -58,7 +58,8 @@ public class CheckpointSystem : MonoBehaviour
         PlayerPrefs.Save();
 
         if (SideQuestManager.Instance != null) SideQuestManager.Instance.FailQuest();
-
+        TutorialTimeTrial tutorial = FindObjectOfType<TutorialTimeTrial>();
+        if (tutorial != null) tutorial.ResetTutorialRoom();
         float alpha = 0f;
         while (alpha < 1f)
         {

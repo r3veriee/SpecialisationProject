@@ -13,8 +13,8 @@ public class DeathSequenceManager : MonoBehaviour
     [Header("UI Taunts & HUD")]
     public TextMeshProUGUI tauntText;
 
-    [Tooltip("Drag any HUD elements you want to hide during death here (like the Dash Reticle)")]
     public GameObject[] hudElementsToHide;
+    private bool[] hudElementPrevStates;
 
     public string[] taunts = {
         "SUB-OPTIMAL TRAJECTORY.",
@@ -45,10 +45,14 @@ public class DeathSequenceManager : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.useGravity = false;
 
-        // turn off other hud elements
-        foreach (GameObject hudItem in hudElementsToHide)
+        hudElementPrevStates = new bool[hudElementsToHide.Length];
+        for (int i = 0; i < hudElementsToHide.Length; i++)
         {
-            if (hudItem != null) hudItem.SetActive(false);
+            if (hudElementsToHide[i] != null)
+            {
+                hudElementPrevStates[i] = hudElementsToHide[i].activeSelf;
+                hudElementsToHide[i].SetActive(false);
+            }
         }
 
         firstPersonCam.enabled = false;
@@ -74,9 +78,10 @@ public class DeathSequenceManager : MonoBehaviour
         if (tauntText != null) tauntText.gameObject.SetActive(false);
         if (playerMesh != null) playerMesh.SetActive(true);
 
-        foreach (GameObject hudItem in hudElementsToHide)
+        for (int i = 0; i < hudElementsToHide.Length; i++)
         {
-            if (hudItem != null) hudItem.SetActive(true);
+            if (hudElementsToHide[i] != null)
+                hudElementsToHide[i].SetActive(hudElementPrevStates[i]);
         }
 
         thirdPersonCam.enabled = false;
