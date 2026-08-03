@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameFinaleManager : MonoBehaviour
 {
@@ -34,6 +35,11 @@ public class GameFinaleManager : MonoBehaviour
 
     [Header("UI Cleanup")]
     public GameObject[] uiElementsToHide;
+
+    [Header("Finale Material Swap")]
+    public Transform materialSwapRoot;
+    public Material finaleObjectMaterial;
+    public Renderer[] renderersToExcludeFromSwap;
 
     public float timeBeforeFadeStarts = 2f;
     public float fadeSpeed = 0.5f;
@@ -93,6 +99,7 @@ public class GameFinaleManager : MonoBehaviour
         RenderSettings.fog = false;
         RenderSettings.skybox = greenFinaleSkybox;
         DynamicGI.UpdateEnvironment();
+        ApplyFinaleMaterials();
 
         if (orbitCinematicCam != null) orbitCinematicCam.clearFlags = CameraClearFlags.Skybox;
 
@@ -182,5 +189,23 @@ public class GameFinaleManager : MonoBehaviour
         int seconds = Mathf.FloorToInt(timeInSeconds - minutes * 60);
         float fraction = (timeInSeconds * 1000) % 1000;
         return string.Format("{0:00}:{1:00}.{2:000}", minutes, seconds, fraction);
+    }
+
+    private void ApplyFinaleMaterials()
+    {
+        if (materialSwapRoot == null || finaleObjectMaterial == null) return;
+
+        HashSet<Renderer> excluded = new HashSet<Renderer>(renderersToExcludeFromSwap);
+        Renderer[] allRenderers = materialSwapRoot.GetComponentsInChildren<Renderer>(true);
+
+        foreach (Renderer r in allRenderers)
+        {
+            if (excluded.Contains(r)) continue;
+
+            Material[] mats = r.sharedMaterials;
+            for (int i = 0; i < mats.Length; i++)
+                mats[i] = finaleObjectMaterial;
+            r.sharedMaterials = mats;
+        }
     }
 }
