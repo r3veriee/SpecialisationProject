@@ -13,6 +13,7 @@ public class GameFinaleManager : MonoBehaviour
 
     public GlitchEffect glitchScript;
     public ChromaticDecay chromaticScript;
+    public Material greenFinaleSkybox;
 
     public CanvasGroup blackFadeScreen;
 
@@ -90,6 +91,9 @@ public class GameFinaleManager : MonoBehaviour
         if (chromaticScript != null) chromaticScript.DisableEffect();
 
         RenderSettings.fog = false;
+        RenderSettings.skybox = greenFinaleSkybox;
+        DynamicGI.UpdateEnvironment();
+
         if (orbitCinematicCam != null) orbitCinematicCam.clearFlags = CameraClearFlags.Skybox;
 
         if (mainPlayerCam != null) mainPlayerCam.enabled = false;
