@@ -132,10 +132,12 @@ public class MovementTech : MonoBehaviour
 
         // Jump Execution
         bool validJumpInput = jumpBufferCounter > 0 || (isJumpHeld && isDashing);
+        
         if (validJumpInput && groundCoyoteCounter > 0 && jumpCooldownTimer <= 0)
         {
             bool intentToHyper = isDashTechDownward || isCrouching;
             if (isGrounded || (isDashing && !intentToHyper)) ExecuteJumpLogic();
+            
         }
 
         wasCrouching = isCrouching;
@@ -197,6 +199,7 @@ public class MovementTech : MonoBehaviour
 
         rb.linearVelocity = Vector3.zero;
         rb.linearVelocity = dashVelocity;
+        AudioManager.Instance.PlaySFX(SFXType.Dash);
     }
 
     void ExecuteJumpLogic()
@@ -215,11 +218,13 @@ public class MovementTech : MonoBehaviour
                 // HYPER / WAVEDASH
                 transform.position += Vector3.up * 0.15f;
                 rb.linearVelocity = (forwardDir * (dashForce * hyperMultiplier * 0.5f)) + (Vector3.up * jumpForce * hyperVerticalMultiplier);
+                AudioManager.Instance.PlaySFX(SFXType.WaveDash);
             }
             else
             {
                 // SUPER JUMP
                 rb.linearVelocity = (forwardDir * (dashForce * superMultiplier)) + (Vector3.up * jumpForce * superVerticalMultiplier);
+                AudioManager.Instance.PlaySFX(SFXType.WaveDash);
             }
             dashTimer = 0;
             isDashing = false;
@@ -230,6 +235,7 @@ public class MovementTech : MonoBehaviour
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            AudioManager.Instance.PlaySFX(SFXType.Jump);
         }
     }
 
@@ -402,12 +408,15 @@ public class MovementTech : MonoBehaviour
             if (!isNextToWall || isGrounded || flatVel.magnitude < (minWallRunSpeed * 0.5f))
             {
                 isWallrunning = false;
+                AudioManager.Instance.StopLoopingSFX(SFXType.WallRunLoop);
             }
             else if (jumpBufferCounter > 0)
             {
                 ExecuteWallJump();
                 isWallrunning = false;
                 jumpBufferCounter = 0;
+                AudioManager.Instance.StopLoopingSFX(SFXType.WallRunLoop);
+                AudioManager.Instance.PlaySFX(SFXType.Jump);
             }
             else
             {
@@ -425,11 +434,13 @@ public class MovementTech : MonoBehaviour
                 isWallrunning = true;
                 canDash = true;
                 dashCooldownTimer = 0f;
+                
 
                 Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
                 Vector3 wallForward = Vector3.ProjectOnPlane(flatVel, wallNormal).normalized;
 
                 rb.linearVelocity = new Vector3(wallForward.x * flatVel.magnitude, 0f, wallForward.z * flatVel.magnitude);
+                AudioManager.Instance.PlaySFX(SFXType.WallRunLoop);
             }
         }
     }

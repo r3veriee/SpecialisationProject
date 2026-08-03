@@ -38,6 +38,7 @@ public class DeathSequenceManager : MonoBehaviour
     private IEnumerator DeathRoutine()
     {
         isDead = true;
+        AudioManager.Instance.PlaySFX(SFXType.Death);
 
         // Freeze the player entirely
         movementScript.enabled = false;

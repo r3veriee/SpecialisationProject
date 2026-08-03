@@ -69,7 +69,7 @@ public class TurretHazard : MonoBehaviour
         if (hasLineOfSight)
         {
             currentCharge += Time.deltaTime;
-
+            AudioManager.Instance.PlaySFX(SFXType.TurretTargeting);
             if (laserSight != null)
             {
                 laserSight.enabled = true;
