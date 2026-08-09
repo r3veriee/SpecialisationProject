@@ -18,34 +18,99 @@ public class AudioManager : MonoBehaviour
     private AudioSource musicSource;
     private Dictionary<SFXType, AudioSource> activeLoops = new Dictionary<SFXType, AudioSource>();
 
-    [Header("Glitch-Linked Distortion")]
+    [Header("Glitch-Linked Distortion & Ducking")]
     public AudioMixer mainMixer;
-    public GlitchEffect glitchScript;
+    private GlitchEffect glitchScript;
     [Tooltip("Multiplies glitch intensity before sending to audio distortion")]
     public float distortionResponseCurve = 1f;
+    [Tooltip("Separate response curve for music distortion — usually lower than SFX")]
+    public float musicDistortionResponseCurve = 0.4f;
+
+    [Header("Glitch Volume Ducking")]
+    [Tooltip("How low SFX volume can duck at max glitch intensity (0.4 = down to 40%)")]
+    [Range(0f, 1f)] public float sfxDuckFloor = 0.4f;
+    [Tooltip("How low music volume can duck at max glitch intensity — usually gentler than SFX")]
+    [Range(0f, 1f)] public float musicDuckFloor = 0.7f;
+
+    [Header("Lowpass (the 'deep/bassy/muffled' feel)")]
+    [Tooltip("Cutoff frequency at zero glitch — clean, full range")]
+    public float lowpassCleanCutoff = 22000f;
+    [Tooltip("Cutoff frequency at max glitch — how deep/muffled it gets")]
+    public float lowpassDeepCutoff = 400f;
+    [Tooltip("Music can have its own, usually less extreme, deep cutoff")]
+    public float musicLowpassDeepCutoff = 800f;
+
+    // Base volumes come from the settings sliders (0-1), saved/loaded via PlayerPrefs by AudioSettingsController
+    private float baseMusicVolume = 0.75f;
+    private float baseSFXVolume = 0.75f;
 
     public void RegisterGlitchEffect(GlitchEffect glitch)
     {
         glitchScript = glitch;
     }
+
     public void UnregisterGlitchEffect(GlitchEffect glitch)
     {
         if (glitchScript == glitch)
         {
             glitchScript = null;
-            mainMixer.SetFloat("SFXDistortion", 0f); // reset distortion so it doesn't get stuck on
+            if (mainMixer != null)
+            {
+                mainMixer.SetFloat("SFXDistortion", 0f);
+                mainMixer.SetFloat("MusicDistortion", 0f);
+                mainMixer.SetFloat("SFXLowpassCutoff", lowpassCleanCutoff);
+                mainMixer.SetFloat("MusicLowpassCutoff", lowpassCleanCutoff);
+                mainMixer.SetFloat("SFXVolume", LinearToDecibel(baseSFXVolume));
+                mainMixer.SetFloat("MusicVolume", LinearToDecibel(baseMusicVolume));
+            }
         }
+    }
+
+    // Called by AudioSettingsController whenever the player moves a slider
+    public void SetBaseMusicVolume(float linear01)
+    {
+        baseMusicVolume = linear01;
+    }
+
+    public void SetBaseSFXVolume(float linear01)
+    {
+        baseSFXVolume = linear01;
     }
 
     void Update()
     {
-        if (glitchScript == null || mainMixer == null) return; // safe no-op while in Main Menu or any scene without a glitch effect
+        if (mainMixer == null) return;
 
-        float distortion = Mathf.Clamp01(glitchScript.CurrentIntensity01 * distortionResponseCurve);
-        mainMixer.SetFloat("SFXDistortion", distortion);
+        float rawGlitch = glitchScript != null ? glitchScript.CurrentIntensity01 : 0f;
+
+        // Push the curve harder so mid-range glitch still reads as noticeable
+        // (square root makes low values ramp up faster than linear)
+        float glitchAmount = Mathf.Sqrt(Mathf.Clamp01(rawGlitch));
+
+        // Ducking
+        float sfxDuckMultiplier = Mathf.Lerp(1f, sfxDuckFloor, glitchAmount);
+        float musicDuckMultiplier = Mathf.Lerp(1f, musicDuckFloor, glitchAmount);
+        mainMixer.SetFloat("SFXVolume", LinearToDecibel(baseSFXVolume * sfxDuckMultiplier));
+        mainMixer.SetFloat("MusicVolume", LinearToDecibel(baseMusicVolume * musicDuckMultiplier));
+
+        // Distortion
+        mainMixer.SetFloat("SFXDistortion", Mathf.Clamp01(glitchAmount * distortionResponseCurve));
+        mainMixer.SetFloat("MusicDistortion", Mathf.Clamp01(glitchAmount * musicDistortionResponseCurve));
+
+        // Lowpass — the deep/bassy/muffled effect. Note: inverted, low value = more effect
+        float sfxCutoff = Mathf.Lerp(lowpassCleanCutoff, lowpassDeepCutoff, glitchAmount);
+        float musicCutoff = Mathf.Lerp(lowpassCleanCutoff, musicLowpassDeepCutoff, glitchAmount);
+        mainMixer.SetFloat("SFXLowpassCutoff", sfxCutoff);
+        mainMixer.SetFloat("MusicLowpassCutoff", musicCutoff);
     }
 
-        void Awake()
+    private float LinearToDecibel(float linear)
+    {
+        if (linear <= 0.0001f) return -80f;
+        return Mathf.Log10(linear) * 20f;
+    }
+
+    void Awake()
     {
         // Enforce singleton: if one already exists, destroy this duplicate
         if (Instance != null && Instance != this)

@@ -287,6 +287,7 @@ public class MovementTech : MonoBehaviour
         {
             playerCollider.height = normalHeight;
             playerCollider.center = Vector3.zero;
+            wasCrouchingForAudio = false;
         }
 
         if (!isDashing)
@@ -404,7 +405,12 @@ public class MovementTech : MonoBehaviour
         wallRight = Physics.Raycast(transform.position, transform.right, out rightWallHit, wallCheckDistance, wallLayer);
         wallLeft = Physics.Raycast(transform.position, -transform.right, out leftWallHit, wallCheckDistance, wallLayer);
 
-        if (jumpCooldownTimer > 0) { isWallrunning = false; return; }
+        if (jumpCooldownTimer > 0)
+        {
+            if (isWallrunning) AudioManager.Instance.StopLoopingSFX(SFXType.WallRun); // ADD THIS
+            isWallrunning = false;
+            return;
+        }
 
         Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         bool isNextToWall = wallLeft || wallRight;
@@ -456,5 +462,14 @@ public class MovementTech : MonoBehaviour
     {
         canDash = true;
         dashCooldownTimer = 0f;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = wallRight ? Color.green : Color.red;
+        Gizmos.DrawRay(transform.position, transform.right * wallCheckDistance);
+
+        Gizmos.color = wallLeft ? Color.green : Color.red;
+        Gizmos.DrawRay(transform.position, -transform.right * wallCheckDistance);
     }
 }

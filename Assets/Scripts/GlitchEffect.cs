@@ -43,7 +43,7 @@ public class GlitchEffect : MonoBehaviour
             glitchVolume.scanlineJitter.overrideState = true;
             glitchVolume.colorDrift.overrideState = true;
         }
-
+        Debug.Log("GlitchVolume found: " + (glitchVolume != null));
         if (AudioManager.Instance != null)
             AudioManager.Instance.RegisterGlitchEffect(this);
     }
