@@ -95870,7 +95870,7 @@ MonoBehaviour:
   minSpeed: 5
   maxSpeed: 16
   slowColor: {r: 0, g: 0, b: 0, a: 1}
-  fastColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  fastColor: {r: 0.16981131, g: 0.16981131, b: 0.16981131, a: 1}
   minExposure: 0.2
   maxExposure: 1.5
   transitionSpeed: 3
