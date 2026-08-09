@@ -7,10 +7,7 @@ public class TurretHazard : MonoBehaviour
     public Transform player;
     private LineRenderer laserSight;
 
-    [Header("Fixed UI Settings")]
-    [Tooltip("Drag your UI Warning Ring PREFAB here!")]
     public GameObject warningUIPrefab;
-    [Tooltip("The exact name of the Layout Group on your Canvas")]
     public string containerName = "TurretWarningContainer";
 
     private Image myUI;
@@ -20,7 +17,7 @@ public class TurretHazard : MonoBehaviour
     public float chargeTime = 3f;
     public float fireCooldown = 4.5f;
     public LayerMask visionBlockers;
-
+    private bool wasTargeting = false;
     private float currentCharge = 0f;
     private float cooldownTimer = 0f;
 
@@ -69,7 +66,13 @@ public class TurretHazard : MonoBehaviour
         if (hasLineOfSight)
         {
             currentCharge += Time.deltaTime;
-            AudioManager.Instance.PlaySFX(SFXType.TurretTargeting);
+
+            if (!wasTargeting)
+            {
+                AudioManager.Instance.PlaySFX(SFXType.TurretTarget);
+                wasTargeting = true;
+            }
+
             if (laserSight != null)
             {
                 laserSight.enabled = true;
@@ -110,5 +113,6 @@ public class TurretHazard : MonoBehaviour
 
         currentCharge = 0f;
         cooldownTimer = fireCooldown;
+        wasTargeting = false;
     }
 }

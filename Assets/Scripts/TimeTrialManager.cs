@@ -65,6 +65,7 @@ public class TimeTrialManager : MonoBehaviour
         {
             timerText.color = failedColor;
             timerText.text = "RUN FAILED";
+            AudioManager.Instance.PlaySFX(SFXType.TimeTrialFail);
         }
     }
 

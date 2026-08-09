@@ -534,6 +534,51 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 117722685}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &161199660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 161199662}
+  - component: {fileID: 161199661}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &161199661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161199660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2774758bbc902e84a9792ff42b4b4cfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelMusicStarter
+  musicClip: {fileID: 8300000, guid: e544a75b21c6fc14d886d0b0c93665e5, type: 3}
+--- !u!4 &161199662
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161199660}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 403.8174, y: -32.70385, z: -308.47412}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &207820076
 GameObject:
   m_ObjectHideFlags: 0
@@ -4080,7 +4125,10 @@ MonoBehaviour:
   sfxMixerGroup: {fileID: -4217408977184931755, guid: 26917860260c8704d970d1b0310d4000, type: 2}
   musicMixerGroup: {fileID: 717220966594853538, guid: 26917860260c8704d970d1b0310d4000, type: 2}
   library: {fileID: 11400000, guid: aceeb16444471d54c98b8aa9c4d0a876, type: 2}
-  poolSize: 12
+  poolSize: 13
+  mainMixer: {fileID: 24100000, guid: 26917860260c8704d970d1b0310d4000, type: 2}
+  glitchScript: {fileID: 0}
+  distortionResponseCurve: 1
 --- !u!4 &1509655139
 Transform:
   m_ObjectHideFlags: 0
@@ -5403,3 +5451,4 @@ SceneRoots:
   - {fileID: 54279041}
   - {fileID: 6654982474853457745}
   - {fileID: 1509655139}
+  - {fileID: 161199662}

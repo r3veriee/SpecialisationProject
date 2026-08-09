@@ -29,6 +29,7 @@ public class PrismShard : MonoBehaviour
         {
             isCollected = true;
             StartCoroutine(CollectSequence(other.gameObject));
+            AudioManager.Instance.PlaySFX(SFXType.ShardTaking);
         }
     }
 

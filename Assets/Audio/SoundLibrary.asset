@@ -12,4 +12,74 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d502c86b2757d8f41a01182f585021da, type: 3}
   m_Name: SoundLibrary
   m_EditorClassIdentifier: Assembly-CSharp::SoundLibrary
-  entries: []
+  entries:
+  - type: 0
+    clips:
+    - {fileID: 8300000, guid: 6016110779312c84cbbd72c87ed304eb, type: 3}
+    volume: 1
+    loop: 0
+  - type: 1
+    clips:
+    - {fileID: 8300000, guid: 673bd2f6ea6ee8b4483edf722eafbb5e, type: 3}
+    volume: 1
+    loop: 0
+  - type: 2
+    clips:
+    - {fileID: 8300000, guid: 31784f6083599ca47b67dfc76d990757, type: 3}
+    volume: 1
+    loop: 0
+  - type: 3
+    clips:
+    - {fileID: 8300000, guid: 6476a994006325d4dbcbf042c0600b71, type: 3}
+    volume: 1
+    loop: 0
+  - type: 4
+    clips:
+    - {fileID: 8300000, guid: fca11b4ea244fdc409ccbc9d93429ed7, type: 3}
+    volume: 1
+    loop: 0
+  - type: 5
+    clips:
+    - {fileID: 8300000, guid: 024a7d3201da048438687318b33cb46f, type: 3}
+    volume: 1
+    loop: 0
+  - type: 6
+    clips:
+    - {fileID: 8300000, guid: 2bfed3b9d3af4454a98d9ed74d72a728, type: 3}
+    volume: 1
+    loop: 0
+  - type: 7
+    clips:
+    - {fileID: 8300000, guid: 62fea0e295bbeff49985ba196de93804, type: 3}
+    volume: 1
+    loop: 0
+  - type: 8
+    clips:
+    - {fileID: 8300000, guid: be3b446dd9e443d49b167fa35921fbe2, type: 3}
+    volume: 1
+    loop: 0
+  - type: 9
+    clips:
+    - {fileID: 8300000, guid: bba092b2c4fd2c047aa3ad433dab5275, type: 3}
+    volume: 1
+    loop: 0
+  - type: 10
+    clips:
+    - {fileID: 8300000, guid: 46f2a0ed96b22674580aa961ae431813, type: 3}
+    volume: 1
+    loop: 0
+  - type: 11
+    clips:
+    - {fileID: 8300000, guid: a809166eba0b5b643bf9a6e9cd561949, type: 3}
+    volume: 1
+    loop: 0
+  - type: 12
+    clips:
+    - {fileID: 8300000, guid: ebf17541ec118a448b6132e92cf7200d, type: 3}
+    volume: 1
+    loop: 0
+  - type: 13
+    clips:
+    - {fileID: 8300000, guid: c4179b9216f668142b652e0a1b6f0fba, type: 3}
+    volume: 1
+    loop: 0

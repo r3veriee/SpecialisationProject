@@ -18,7 +18,7 @@ public class BoostHoop : MonoBehaviour
                 {
                     boostedVelocity = boostedVelocity.normalized * maxSpeedCap;
                 }
-
+                AudioManager.Instance.PlaySFX(SFXType.BoostHoop);
                 rb.linearVelocity = boostedVelocity;
             }
         }

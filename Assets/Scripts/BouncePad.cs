@@ -64,7 +64,7 @@ public class BouncePad : MonoBehaviour
                 }
 
                 if (bounceParticles != null) bounceParticles.Play();
-                if (bounceSound != null) bounceSound.Play();
+                AudioManager.Instance.PlaySFX(SFXType.BouncePad);
 
                 cooldownTimer = padCooldown;
             }

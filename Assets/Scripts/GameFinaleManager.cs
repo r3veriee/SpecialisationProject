@@ -83,7 +83,7 @@ public class GameFinaleManager : MonoBehaviour
     IEnumerator FinaleRoutine(GameObject player)
     {
         finaleTriggered = true;
-        AudioManager.Instance.PlaySFX(SFXType.GameFinale);
+        AudioManager.Instance.PlaySFX(SFXType.FinaleEnd);
 
         if (TimeTrialManager.Instance != null) TimeTrialManager.Instance.StopTimer();
 

@@ -1,19 +1,17 @@
 public enum SFXType
 {
-    Dash,
-    Jump,
-    SuperDash,
-    WaveDash,
-    DashCrystal,
-    TimeTrialComplete,
-    TimeTrialFail,
-    Death,
     BouncePad,
+    Dash,
+    TechDash,
     BoostHoop,
-    WallRunLoop,
-    TurretTargeting,
-    ScreenTransition,
-    LevelComplete,
-    GameFinale,
-    Slide
+    DashCrystal,
+    Death,
+    ShardTaking,
+    Slide,
+    TimeTrialFail,
+    TurretTarget,
+    WallRun,
+    LevelFinish,
+    FinaleEnd,
+    Jump
 }

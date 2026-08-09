@@ -38,6 +38,7 @@ public class TutorialTimeTrial : MonoBehaviour
             if (deathManager != null)
             {
                 deathManager.TriggerDeath();
+                AudioManager.Instance.PlaySFX(SFXType.TimeTrialFail);
             }
 
             // Reset the room so they can try again from the checkpoint

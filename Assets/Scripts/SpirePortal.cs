@@ -31,6 +31,7 @@ public class SpirePortal : MonoBehaviour
         {
             isTransitioning = true;
             StartCoroutine(LevelCompleteSequence(other.gameObject));
+            AudioManager.Instance.PlaySFX(SFXType.LevelFinish);
         }
     }
 

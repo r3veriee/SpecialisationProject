@@ -18,7 +18,34 @@ public class AudioManager : MonoBehaviour
     private AudioSource musicSource;
     private Dictionary<SFXType, AudioSource> activeLoops = new Dictionary<SFXType, AudioSource>();
 
-    void Awake()
+    [Header("Glitch-Linked Distortion")]
+    public AudioMixer mainMixer;
+    public GlitchEffect glitchScript;
+    [Tooltip("Multiplies glitch intensity before sending to audio distortion")]
+    public float distortionResponseCurve = 1f;
+
+    public void RegisterGlitchEffect(GlitchEffect glitch)
+    {
+        glitchScript = glitch;
+    }
+    public void UnregisterGlitchEffect(GlitchEffect glitch)
+    {
+        if (glitchScript == glitch)
+        {
+            glitchScript = null;
+            mainMixer.SetFloat("SFXDistortion", 0f); // reset distortion so it doesn't get stuck on
+        }
+    }
+
+    void Update()
+    {
+        if (glitchScript == null || mainMixer == null) return; // safe no-op while in Main Menu or any scene without a glitch effect
+
+        float distortion = Mathf.Clamp01(glitchScript.CurrentIntensity01 * distortionResponseCurve);
+        mainMixer.SetFloat("SFXDistortion", distortion);
+    }
+
+        void Awake()
     {
         // Enforce singleton: if one already exists, destroy this duplicate
         if (Instance != null && Instance != this)
@@ -93,6 +120,9 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(AudioClip clip)
     {
+        // If this exact clip is already playing, don't restart it — let it keep going
+        if (musicSource.clip == clip && musicSource.isPlaying) return;
+
         musicSource.clip = clip;
         musicSource.Play();
     }

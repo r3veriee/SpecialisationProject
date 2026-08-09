@@ -39,6 +39,7 @@ public class DashCrystal : MonoBehaviour
                 playerMovement.ResetDash();
                 StartCoroutine(CrystalRespawnRoutine());
             }
+            AudioManager.Instance.PlaySFX(SFXType.DashCrystal);
         }
     }
 

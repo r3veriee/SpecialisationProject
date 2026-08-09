@@ -24,6 +24,16 @@ public class GlitchEffect : MonoBehaviour
     private GlitchVolume glitchVolume;
     private bool isPermanentlyDisabled = false;
 
+    public float CurrentIntensity01
+    {
+        get
+        {
+            if (glitchVolume == null || isPermanentlyDisabled) return 0f;
+            return maxIntensity > 0f ? glitchVolume.intensity.value / maxIntensity : 0f;
+        }
+    }
+
+
     void Start()
     {
         if (postProcessVolume.profile.TryGet(out GlitchVolume gv))
@@ -33,6 +43,15 @@ public class GlitchEffect : MonoBehaviour
             glitchVolume.scanlineJitter.overrideState = true;
             glitchVolume.colorDrift.overrideState = true;
         }
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.RegisterGlitchEffect(this);
+    }
+
+    void OnDestroy()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.UnregisterGlitchEffect(this);
     }
 
     void Update()
