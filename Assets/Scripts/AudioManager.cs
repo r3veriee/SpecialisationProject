@@ -40,6 +40,11 @@ public class AudioManager : MonoBehaviour
     [Tooltip("Music can have its own, usually less extreme, deep cutoff")]
     public float musicLowpassDeepCutoff = 800f;
 
+    [Header("Echo/Warp")]
+    [Tooltip("How much echo blends in at max glitch intensity")]
+    [Range(0f, 1f)] public float sfxEchoMaxWet = 0.35f;
+    [Range(0f, 1f)] public float musicEchoMaxWet = 0.25f;
+
     // Base volumes come from the settings sliders (0-1), saved/loaded via PlayerPrefs by AudioSettingsController
     private float baseMusicVolume = 0.75f;
     private float baseSFXVolume = 0.75f;
@@ -62,6 +67,8 @@ public class AudioManager : MonoBehaviour
                 mainMixer.SetFloat("MusicLowpassCutoff", lowpassCleanCutoff);
                 mainMixer.SetFloat("SFXVolume", LinearToDecibel(baseSFXVolume));
                 mainMixer.SetFloat("MusicVolume", LinearToDecibel(baseMusicVolume));
+                mainMixer.SetFloat("SFXEchoWetMix", 0f);
+                mainMixer.SetFloat("MusicEchoWetMix", 0f);
             }
         }
     }
@@ -96,6 +103,10 @@ public class AudioManager : MonoBehaviour
         // Distortion
         mainMixer.SetFloat("SFXDistortion", Mathf.Clamp01(glitchAmount * distortionResponseCurve));
         mainMixer.SetFloat("MusicDistortion", Mathf.Clamp01(glitchAmount * musicDistortionResponseCurve));
+
+        // Echo/warp
+        mainMixer.SetFloat("SFXEchoWetMix", glitchAmount * sfxEchoMaxWet);
+        mainMixer.SetFloat("MusicEchoWetMix", glitchAmount * musicEchoMaxWet);
 
         // Lowpass — the deep/bassy/muffled effect. Note: inverted, low value = more effect
         float sfxCutoff = Mathf.Lerp(lowpassCleanCutoff, lowpassDeepCutoff, glitchAmount);

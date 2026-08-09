@@ -67,7 +67,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 46f2a0ed96b22674580aa961ae431813, type: 3}
     volume: 1
-    loop: 0
+    loop: 1
   - type: 11
     clips:
     - {fileID: 8300000, guid: a809166eba0b5b643bf9a6e9cd561949, type: 3}
