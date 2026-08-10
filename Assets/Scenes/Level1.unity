@@ -30952,8 +30952,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 22.813, y: -19.914978}
-  m_SizeDelta: {x: 245.627, y: 71.885}
+  m_AnchoredPosition: {x: 46.65, y: -19.914978}
+  m_SizeDelta: {x: 293.301, y: 71.885}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &380755065
 MonoBehaviour:
@@ -128403,7 +128403,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61fb344feab3c46a46a76812f36535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioSettingsController
-  mainMixer: {fileID: 24100000, guid: 26917860260c8704d970d1b0310d4000, type: 2}
   musicSlider: {fileID: 804256108}
   sfxSlider: {fileID: 1064214636}
 --- !u!1 &2143985128
